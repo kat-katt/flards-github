@@ -1,0 +1,59 @@
+name: flard
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+      sdk: flutter
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  url_launcher: ^6.3.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/acc.png
+    - assets/apple.png
+    - assets/change pfp.png
+    - assets/create.png
+    - assets/edit.png
+    - assets/eye.png
+    - assets/facebook.png
+    - assets/folder.png
+    - assets/google.png
+    - assets/hidden.png
+    - assets/home.png
+    - assets/icon.png
+    - assets/lock.png
+    - assets/logo.png
+    - assets/logout.png
+    - assets/pfp1.png
+    - assets/pfp2.png
+    - assets/pfp3.png
+    - assets/pfp4.png
+    - assets/pfp5.png
+    - assets/pfp6.png
+    - assets/pfp7.png
+    - assets/pfp8.png
+    - assets/pfp9.png
+    - assets/profile.png
+    - assets/profile_icon.png
+    - assets/search.png
+    - assets/spades.png
+    - assets/spade_back.png
+  fonts:
+    - family: OPTIFrankfurter-Medium
+      fonts:
+        - asset: assets/fonts/OPTIFrankfurter-Medium.otf
+
