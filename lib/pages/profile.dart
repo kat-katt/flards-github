@@ -5,6 +5,9 @@ import 'home.dart';
 import 'change_bio.dart';
 import 'change_pfp.dart';
 import 'logout_prompt.dart';
+import 'create_flashcard_set_page.dart';
+import 'newfolder.dart';
+import 'item.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -31,7 +34,7 @@ class _ProfileState extends State<Profile> {
       User? user = _auth.currentUser;
       if (user != null) {
         DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
+        await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists && userDoc['profilePicture'] != null) {
           setState(() {
             _profilePicture = userDoc['profilePicture'];
@@ -59,9 +62,9 @@ class _ProfileState extends State<Profile> {
       }
     } catch (e) {
       print('Error updating profile picture: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to log out')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to log out')),
+      );
     }
   }
 
@@ -75,6 +78,8 @@ class _ProfileState extends State<Profile> {
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
+    } else if (index == 1) {
+      _showCreateDialog();
     }
   }
 
@@ -99,11 +104,10 @@ class _ProfileState extends State<Profile> {
   void _logout() {
     showDialog(
       context: context,
-      builder:
-          (context) => const Dialog(
-            backgroundColor: Colors.transparent,
-            child: LogOutConfirmation(),
-          ),
+      builder: (context) => const Dialog(
+        backgroundColor: Colors.transparent,
+        child: LogOutConfirmation(),
+      ),
     );
   }
 
@@ -111,13 +115,228 @@ class _ProfileState extends State<Profile> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => ChangeProfile(
-              onProfilePictureChanged: (newProfilePicture) {
-                _updateProfilePicture(newProfilePicture);
-              },
-            ),
+        builder: (context) => ChangeProfile(
+          onProfilePictureChanged: (newProfilePicture) {
+            _updateProfilePicture(newProfilePicture);
+          },
+        ),
       ),
+    );
+  }
+
+  void _showCreateDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFD1E5FE),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFF081D5C), width: 2),
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 45,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage("https://placehold.co/45x45"),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          child: Container(
+                            width: 23,
+                            height: 19,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage("https://placehold.co/23x19"),
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const Center(
+                      child: Text(
+                        'Create',
+                        style: TextStyle(
+                          color: Color(0xFF081D5C),
+                          fontSize: 40,
+                          fontFamily: 'OPTIFrankfurter-Medium',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        showGeneralDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          pageBuilder: (context, _, __) => CreateFlashcardSetPage(),
+                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                        );
+                      },
+                      child: Container(
+                        width: 211,
+                        height: 53,
+                        decoration: ShapeDecoration(
+                          color: const Color(0xFFD1E5FE),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              width: 2,
+                              color: const Color(0xFF081D5C),
+                            ),
+                            borderRadius: BorderRadius.circular(19),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(width: 10),
+                            Container(
+                              width: 37,
+                              height: 37,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage("https://placehold.co/37x37"),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              child: Center(
+                                child: Text(
+                                  'New set',
+                                  style: TextStyle(
+                                    color: Color(0xFF081D5C),
+                                    fontSize: 25,
+                                    fontFamily: 'OPTIFrankfurter-Medium',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () async {
+                        Navigator.pop(context);
+                        final result = await showGeneralDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          pageBuilder: (context, _, __) => const NewFolder(),
+                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                        );
+                        if (result != null && result is Item && mounted) {
+                          setState(() {
+                            // Handle folder addition if needed
+                          });
+                        }
+                      },
+                      child: Container(
+                        width: 211,
+                        height: 53,
+                        decoration: ShapeDecoration(
+                          color: const Color(0xFFD1E5FE),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              width: 2,
+                              color: const Color(0xFF081D5C),
+                            ),
+                            borderRadius: BorderRadius.circular(19),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(width: 10),
+                            Container(
+                              width: 33,
+                              height: 33,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage("https://placehold.co/33x33"),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              child: Center(
+                                child: Text(
+                                  'New folder',
+                                  style: TextStyle(
+                                    color: Color(0xFF081D5C),
+                                    fontSize: 25,
+                                    fontFamily: 'OPTIFrankfurter-Medium',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(
+                        Icons.close,
+                        color: Color(0xFF081D5C),
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -440,23 +659,19 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 0
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 0 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 0
-                          ? [
-                            const BoxShadow(
-                              color: Color(0xFF354FAF),
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 0
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
-                child: Image.asset("assets/home.png", width: 30, height: 30),
+                child: const Icon(Icons.home, size: 30),
               ),
             ),
             label: 'Home',
@@ -468,23 +683,19 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 1
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 1 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 1
-                          ? [
-                            const BoxShadow(
-                              color: Color(0xFF354FAF),
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 1
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
-                child: Image.asset("assets/create.png", width: 30, height: 30),
+                child: const Icon(Icons.add_circle_outline, size: 30),
               ),
             ),
             label: 'Create',
@@ -496,27 +707,19 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 2
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 2 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 2
-                          ? [
-                            const BoxShadow(
-                              color: Color(0xFF354FAF),
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 2
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
-                child: Image.asset(
-                  "assets/profile_icon.png",
-                  width: 30,
-                  height: 30,
-                ),
+                child: const Icon(Icons.person, size: 30),
               ),
             ),
             label: 'Profile',
