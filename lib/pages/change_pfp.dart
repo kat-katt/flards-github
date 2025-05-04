@@ -8,9 +8,9 @@ class ChangeProfile extends StatelessWidget {
   const ChangeProfile({super.key, required this.onProfilePictureChanged});
 
   Future<void> _selectProfilePicture(
-    BuildContext context,
-    String pfpPath,
-  ) async {
+      BuildContext context,
+      String pfpPath,
+      ) async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -143,9 +143,9 @@ class ChangeProfile extends StatelessWidget {
                                   GestureDetector(
                                     onTap:
                                         () => _selectProfilePicture(
-                                          context,
-                                          'assets/pfp$i.png',
-                                        ),
+                                      context,
+                                      'assets/pfp$i.png',
+                                    ),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
@@ -169,9 +169,9 @@ class ChangeProfile extends StatelessWidget {
                   child: GestureDetector(
                     onTap:
                         () => _selectProfilePicture(
-                          context,
-                          'assets/profile.png',
-                        ),
+                      context,
+                      'assets/profile.png',
+                    ),
                     child: Container(
                       width: 197,
                       height: 40,
