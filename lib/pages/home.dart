@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'newfolder.dart';
-import 'profile.dart';
+import 'create_flashcard_set_page.dart';
+import 'folders.dart';
+import 'item.dart';
+import 'profile.dart'; 
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,15 +14,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  List<Item> folders = [];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+
     if (index == 1) {
       _showCreateDialog();
     } else if (index == 2) {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const Profile()),
       );
@@ -53,10 +58,10 @@ class _HomePageState extends State<HomePage> {
                         Container(
                           width: 45,
                           height: 45,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("assets/icon.png"),
-                              fit: BoxFit.cover,
+                              image: NetworkImage("https://placehold.co/45x45"),
+                              fit: BoxFit.fill,
                             ),
                           ),
                         ),
@@ -65,10 +70,10 @@ class _HomePageState extends State<HomePage> {
                           child: Container(
                             width: 23,
                             height: 19,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: AssetImage("assets/spades.png"),
-                                fit: BoxFit.cover,
+                                image: NetworkImage("https://placehold.co/23x19"),
+                                fit: BoxFit.fill,
                               ),
                             ),
                           ),
@@ -90,8 +95,18 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 20),
                     GestureDetector(
                       onTap: () {
-                        print('New Set tapped');
                         Navigator.pop(context);
+                        showGeneralDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          pageBuilder: (context, _, __) => CreateFlashcardSetPage(),
+                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                        );
                       },
                       child: Container(
                         width: 211,
@@ -99,9 +114,9 @@ class _HomePageState extends State<HomePage> {
                         decoration: ShapeDecoration(
                           color: const Color(0xFFD1E5FE),
                           shape: RoundedRectangleBorder(
-                            side: const BorderSide(
+                            side: BorderSide(
                               width: 2,
-                              color: Color(0xFF081D5C),
+                              color: const Color(0xFF081D5C),
                             ),
                             borderRadius: BorderRadius.circular(19),
                           ),
@@ -113,10 +128,10 @@ class _HomePageState extends State<HomePage> {
                             Container(
                               width: 37,
                               height: 37,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: AssetImage("assets/create.png"),
-                                  fit: BoxFit.cover,
+                                  image: NetworkImage("https://placehold.co/37x37"),
+                                  fit: BoxFit.fill,
                                 ),
                               ),
                             ),
@@ -140,24 +155,24 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 20),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        showGeneralDialog(
+                        final result = await showGeneralDialog(
                           context: context,
                           barrierDismissible: false,
                           pageBuilder: (context, _, __) => const NewFolder(),
-                          transitionBuilder: (
-                            context,
-                            animation,
-                            secondaryAnimation,
-                            child,
-                          ) {
+                          transitionBuilder: (context, animation, secondaryAnimation, child) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
                             );
                           },
                         );
+                        if (result != null && result is Item && mounted) {
+                          setState(() {
+                            folders.add(result);
+                          });
+                        }
                       },
                       child: Container(
                         width: 211,
@@ -165,9 +180,9 @@ class _HomePageState extends State<HomePage> {
                         decoration: ShapeDecoration(
                           color: const Color(0xFFD1E5FE),
                           shape: RoundedRectangleBorder(
-                            side: const BorderSide(
+                            side: BorderSide(
                               width: 2,
-                              color: Color(0xFF081D5C),
+                              color: const Color(0xFF081D5C),
                             ),
                             borderRadius: BorderRadius.circular(19),
                           ),
@@ -179,10 +194,10 @@ class _HomePageState extends State<HomePage> {
                             Container(
                               width: 33,
                               height: 33,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: AssetImage("assets/folder.png"),
-                                  fit: BoxFit.cover,
+                                  image: NetworkImage("https://placehold.co/33x33"),
+                                  fit: BoxFit.fill,
                                 ),
                               ),
                             ),
@@ -235,241 +250,332 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          Container(
-            width: 390,
-            height: 844,
-            clipBehavior: Clip.antiAlias,
-            decoration: const BoxDecoration(color: Color(0xFFFFF6ED)),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: -10,
-                  top: -89,
-                  child: Container(
-                    width: 464,
-                    height: 1354,
-                    decoration: const BoxDecoration(
-                      gradient: RadialGradient(
-                        center: Alignment(0.10, 0.37),
-                        radius: 1.60,
-                        colors: [Color(0xFF344EAF), Color(0xFF6F96D1)],
-                      ),
-                    ),
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: 390,
+              height: 1203,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage("https://placehold.co/390x1203"),
+                  fit: BoxFit.contain,
                 ),
-                Positioned(
-                  left: 120,
-                  top: 42,
-                  child: Container(
-                    width: 111,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage("assets/logo.png"),
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 37,
-                  top: 110,
-                  child: Container(
-                    width: 316,
-                    height: 53,
-                    decoration: ShapeDecoration(
-                      color: const Color(0xFFFFF6ED),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(17),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 95,
-                  top: 130,
-                  child: SizedBox(
-                    width: 153,
-                    height: 17,
-                    child: Text(
-                      'Sets, tags, users',
-                      style: TextStyle(
-                        color: const Color(0xFF354FAF),
-                        fontSize: 16,
-                        fontFamily: 'Questrial',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 52,
-                  top: 126,
-                  child: Image(
-                    image: const AssetImage("assets/search.png"),
-                    width: 27,
-                    height: 27,
-                    color: const Color(0xFF354FAF),
-                  ),
-                ),
-                Positioned(
-                  left: 15,
-                  top: 190,
-                  child: Container(
-                    width: 360,
-                    height: 1000,
-                    decoration: ShapeDecoration(
-                      color: const Color(0xFFD1E5FE),
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(
-                          width: 4,
-                          strokeAlign: BorderSide.strokeAlignOutside,
-                          color: Color(0xFF081D5C),
-                        ),
-                        borderRadius: BorderRadius.circular(56),
-                      ),
-                    ),
-                    child: SingleChildScrollView(
-                      child: SizedBox(
-                        width: 360,
-                        height: 1000,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: 24,
-                              top: 25,
-                              child: SizedBox(
-                                width: 320,
-                                height: 27,
-                                child: Text(
-                                  'Recently opened sets',
-                                  style: TextStyle(
-                                    color: const Color(0xFF081D5C),
-                                    fontSize: 20,
-                                    fontFamily: 'OPTIFrankfurter-Medium',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              left: 24,
-                              top: 80,
-                              child: Container(
-                                width: 312,
-                                height: 150,
-                                decoration: ShapeDecoration(
-                                  color: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(17),
-                                  ),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: Image.asset("assets/folder.png"),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const Text(
-                                      'No Sets Yet!',
-                                      style: TextStyle(
-                                        color: Color(0xFF081D5C),
-                                        fontSize: 18,
-                                        fontFamily: 'Questrial',
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'Tap Create to Get Started!',
-                                      style: TextStyle(
-                                        color: Color(0xFF081D5C),
-                                        fontSize: 14,
-                                        fontFamily: 'Questrial',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              left: 24,
-                              top: 260,
-                              child: SizedBox(
-                                width: 320,
-                                height: 27,
-                                child: Text(
-                                  'Recently opened folders',
-                                  style: TextStyle(
-                                    color: const Color(0xFF081D5C),
-                                    fontSize: 20,
-                                    fontFamily: 'OPTIFrankfurter-Medium',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              left: 24,
-                              top: 315,
-                              child: Container(
-                                width: 312,
-                                height: 150,
-                                decoration: ShapeDecoration(
-                                  color: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(17),
-                                  ),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: Image.asset("assets/folder.png"),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const Text(
-                                      'No Folders Yet!',
-                                      style: TextStyle(
-                                        color: Color(0xFF081D5C),
-                                        fontSize: 18,
-                                        fontFamily: 'Questrial',
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'Tap Create to Get Started!',
-                                      style: TextStyle(
-                                        color: Color(0xFF081D5C),
-                                        fontSize: 14,
-                                        fontFamily: 'Questrial',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: -10,
+                    top: -89,
+                    child: Container(
+                      width: 464,
+                      height: 1354,
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          center: const Alignment(0.10, 0.37),
+                          radius: 1.60,
+                          colors: [
+                            const Color(0xFF344EAF),
+                            const Color(0xFF6F96D1),
                           ],
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    left: 14,
+                    top: 17,
+                    child: SizedBox(
+                      width: 360,
+                      height: 1208,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            left: 0,
+                            top: 175,
+                            child: Container(
+                              width: 360,
+                              height: 1348,
+                              decoration: ShapeDecoration(
+                                color: const Color(0xFFD1E5FE),
+                                shape: RoundedRectangleBorder(
+                                  side: const BorderSide(
+                                    width: 4,
+                                    strokeAlign: BorderSide.strokeAlignOutside,
+                                    color: Color(0xFF081D5C),
+                                  ),
+                                  borderRadius: BorderRadius.circular(56),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 39,
+                            top: 98,
+                            child: Container(
+                              width: 316,
+                              height: 53,
+                              decoration: ShapeDecoration(
+                                color: const Color(0xFFFFF6ED),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(17),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 97,
+                            top: 118,
+                            child: SizedBox(
+                              width: 153,
+                              height: 17,
+                              child: Text(
+                                'Sets, tags, users',
+                                style: TextStyle(
+                                  color: const Color(0xFF354FAF),
+                                  fontSize: 16,
+                                  fontFamily: 'Questrial',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 54,
+                            top: 114,
+                            child: Icon(
+                              Icons.search,
+                              size: 27,
+                              color: const Color(0xFF354FAF),
+                            ),
+                          ),
+                          Positioned(
+                            left: 30,
+                            top: 42,
+                            child: Container(
+                              width: 111,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                image: const DecorationImage(
+                                  image: AssetImage("assets/logo.png"),
+                                  fit: BoxFit.fill,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0x3F000000),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 4),
+                                    spreadRadius: 0,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 24,
+                            top: 215,
+                            child: SizedBox(
+                              width: 320,
+                              height: 27,
+                              child: Text(
+                                'Recently opened sets',
+                                style: TextStyle(
+                                  color: const Color(0xFF081D5C),
+                                  fontSize: 20,
+                                  fontFamily: 'OPTIFrankfurter-Medium',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 24,
+                            top: 270,
+                            child: Container(
+                              width: 312,
+                              height: 150,
+                              decoration: ShapeDecoration(
+                                color: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(17),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: Image.asset(
+                                      "assets/folder.png",
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No Sets Yet!',
+                                    style: TextStyle(
+                                      color: const Color(0xFF081D5C),
+                                      fontSize: 18,
+                                      fontFamily: 'Questrial',
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Tap Create to Get Started!',
+                                    style: TextStyle(
+                                      color: const Color(0xFF081D5C),
+                                      fontSize: 14,
+                                      fontFamily: 'Questrial',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 24,
+                            top: 450,
+                            child: SizedBox(
+                              width: 320,
+                              height: 27,
+                              child: Text(
+                                'Recently opened folders',
+                                style: TextStyle(
+                                  color: const Color(0xFF081D5C),
+                                  fontSize: 20,
+                                  fontFamily: 'OPTIFrankfurter-Medium',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 24,
+                            top: 500,
+                            child: folders.isEmpty
+                                ? Container(
+                              width: 312,
+                              height: 150,
+                              decoration: ShapeDecoration(
+                                color: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(17),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: Image.asset(
+                                      "assets/folder.png",
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No Folders Yet!',
+                                    style: TextStyle(
+                                      color: const Color(0xFF081D5C),
+                                      fontSize: 18,
+                                      fontFamily: 'Questrial',
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Tap Create to Get Started!',
+                                    style: TextStyle(
+                                      color: const Color(0xFF081D5C),
+                                      fontSize: 14,
+                                      fontFamily: 'Questrial',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                                : Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Container(
+                                width: 312,
+                                height: 150,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemCount: folders.length,
+                                  itemBuilder: (context, index) {
+                                    final folder = folders[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 24),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Folders(folder: folder),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          width: 150,
+                                          decoration: ShapeDecoration(
+                                            color: Colors.transparent,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(17),
+                                            ),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: 50,
+                                                height: 50,
+                                                child: Image.asset(
+                                                  "assets/folderr.png",
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                child: Text(
+                                                  folder.name,
+                                                  style: TextStyle(
+                                                    color: const Color(0xFF081D5C),
+                                                    fontSize: 16,
+                                                    fontFamily: 'Questrial',
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
@@ -480,23 +586,19 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 0
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 0 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 0
-                          ? [
-                            const BoxShadow(
-                              color: Color(0xFF354FAF),
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 0
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
-                child: Image.asset("assets/home.png", width: 30, height: 30),
+                child: const Icon(Icons.home, size: 30),
               ),
             ),
             label: 'Home',
@@ -508,23 +610,19 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 1
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 1 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 1
-                          ? [
-                            const BoxShadow(
-                              color: Color(0xFF354FAF),
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 1
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
-                child: Image.asset("assets/create.png", width: 30, height: 30),
+                child: const Icon(Icons.add_circle_outline, size: 30),
               ),
             ),
             label: 'Create',
@@ -536,27 +634,19 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 2
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 2 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 2
-                          ? [
-                            const BoxShadow(
-                              color: Color(0xFF354FAF),
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 2
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
-                child: Image.asset(
-                  "assets/profile_icon.png",
-                  width: 30,
-                  height: 30,
-                ),
+                child: const Icon(Icons.person, size: 30),
               ),
             ),
             label: 'Profile',
