@@ -41,7 +41,9 @@ class _SettingsPageState extends State<SettingsPage> {
     });
     await prefs.setBool('notifications_enabled', value);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Notifications ${value ? 'enabled' : 'disabled'}')),
+      SnackBar(
+        content: Text('Notifications ${value ? 'enabled' : 'disabled'}'),
+      ),
     );
   }
 
@@ -52,7 +54,9 @@ class _SettingsPageState extends State<SettingsPage> {
     });
     await prefs.setBool('sound_effects_enabled', value);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Sound effects ${value ? 'enabled' : 'disabled'}')),
+      SnackBar(
+        content: Text('Sound effects ${value ? 'enabled' : 'disabled'}'),
+      ),
     );
   }
 
@@ -72,9 +76,9 @@ class _SettingsPageState extends State<SettingsPage> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not open $url')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not open $url')));
     }
   }
 
@@ -99,10 +103,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 decoration: const BoxDecoration(
                   color: Color(0xFFD1E5FE),
                   border: Border(
-                    bottom: BorderSide(
-                      width: 4,
-                      color: Color(0xFF081D5C),
-                    ),
+                    bottom: BorderSide(width: 4, color: Color(0xFF081D5C)),
                   ),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(56),
@@ -113,7 +114,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     const SizedBox(width: 16),
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Color(0xFF081D5C)),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF081D5C),
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -168,7 +172,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ChangeUsernamePage(),
+                                  builder:
+                                      (context) => const ChangeUsernamePage(),
                                 ),
                               );
                             },
@@ -193,7 +198,11 @@ class _SettingsPageState extends State<SettingsPage> {
                             title: 'Change profile picture',
                             onTap: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Change profile picture tapped')),
+                                const SnackBar(
+                                  content: Text(
+                                    'Change profile picture tapped',
+                                  ),
+                                ),
                               );
                             },
                           ),
@@ -205,7 +214,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ChangePasswordPage(),
+                                  builder:
+                                      (context) => const ChangePasswordPage(),
                                 ),
                               );
                             },
@@ -343,123 +353,161 @@ class _SettingsPageState extends State<SettingsPage> {
                             onTap: () {
                               showDialog(
                                 context: context,
-                                builder: (context) => Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(19),
-                                  ),
-                                  child: Container(
-                                    width: 271,
-                                    height: 304,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(19),
-                                    ),
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          left: 49,
-                                          top: 39,
-                                          child: SizedBox(
-                                            width: 181,
-                                            height: 75,
-                                            child: Text(
-                                              'Are you sure you want to log out?',
-                                              style: TextStyle(
-                                                color: const Color(0xFF081D5C),
-                                                fontSize: 24,
-                                                fontFamily: 'Questrial',
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
+                                builder:
+                                    (context) => Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(19),
+                                      ),
+                                      child: Container(
+                                        width: 271,
+                                        height: 304,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            19,
                                           ),
                                         ),
-                                        Positioned(
-                                          left: 34,
-                                          top: 124,
-                                          child: GestureDetector(
-                                            onTap: () async {
-                                              try {
-                                                await FirebaseAuth.instance.signOut();
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) => const SignIn(),
-                                                  ),
-                                                );
-                                              } catch (e) {
-                                                Navigator.pop(context);
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(content: Text('Error logging out: $e')),
-                                                );
-                                              }
-                                            },
-                                            child: Container(
-                                              width: 211,
-                                              height: 53,
-                                              decoration: ShapeDecoration(
-                                                color: const Color(0xFF344EAF),
-                                                shape: RoundedRectangleBorder(
-                                                  side: BorderSide(
-                                                    width: 2,
-                                                    color: const Color(0xFF081D5C),
-                                                  ),
-                                                  borderRadius: BorderRadius.circular(19),
-                                                ),
-                                              ),
-                                              child: Center(
+                                        child: Stack(
+                                          children: [
+                                            Positioned(
+                                              left: 49,
+                                              top: 39,
+                                              child: SizedBox(
+                                                width: 181,
+                                                height: 75,
                                                 child: Text(
-                                                  'Log out',
-                                                  textAlign: TextAlign.center,
+                                                  'Are you sure you want to log out?',
                                                   style: TextStyle(
-                                                    color: const Color(0xFFFFF6ED),
-                                                    fontSize: 25,
-                                                    fontFamily: 'OPTIFrankfurter-Medium',
-                                                    fontWeight: FontWeight.w500,
+                                                    color: const Color(
+                                                      0xFF081D5C,
+                                                    ),
+                                                    fontSize: 24,
+                                                    fontFamily: 'Questrial',
+                                                    fontWeight: FontWeight.w400,
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          left: 34,
-                                          top: 206,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Container(
-                                              width: 211,
-                                              height: 53,
-                                              decoration: ShapeDecoration(
-                                                color: const Color(0xFFD1E5FE),
-                                                shape: RoundedRectangleBorder(
-                                                  side: BorderSide(
-                                                    width: 2,
-                                                    color: const Color(0xFF081D5C),
+                                            Positioned(
+                                              left: 34,
+                                              top: 124,
+                                              child: GestureDetector(
+                                                onTap: () async {
+                                                  try {
+                                                    await FirebaseAuth.instance
+                                                        .signOut();
+                                                    Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder:
+                                                            (context) =>
+                                                                const SignIn(),
+                                                      ),
+                                                    );
+                                                  } catch (e) {
+                                                    Navigator.pop(context);
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          'Error logging out: $e',
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                child: Container(
+                                                  width: 211,
+                                                  height: 53,
+                                                  decoration: ShapeDecoration(
+                                                    color: const Color(
+                                                      0xFF344EAF,
+                                                    ),
+                                                    shape: RoundedRectangleBorder(
+                                                      side: BorderSide(
+                                                        width: 2,
+                                                        color: const Color(
+                                                          0xFF081D5C,
+                                                        ),
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            19,
+                                                          ),
+                                                    ),
                                                   ),
-                                                  borderRadius: BorderRadius.circular(19),
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  'Cancel',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: const Color(0xFF081D5C),
-                                                    fontSize: 25,
-                                                    fontFamily: 'OPTIFrankfurter-Medium',
-                                                    fontWeight: FontWeight.w500,
+                                                  child: Center(
+                                                    child: Text(
+                                                      'Log out',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: const Color(
+                                                          0xFFFFF6ED,
+                                                        ),
+                                                        fontSize: 25,
+                                                        fontFamily:
+                                                            'OPTIFrankfurter-Medium',
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
+                                            Positioned(
+                                              left: 34,
+                                              top: 206,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Container(
+                                                  width: 211,
+                                                  height: 53,
+                                                  decoration: ShapeDecoration(
+                                                    color: const Color(
+                                                      0xFFD1E5FE,
+                                                    ),
+                                                    shape: RoundedRectangleBorder(
+                                                      side: BorderSide(
+                                                        width: 2,
+                                                        color: const Color(
+                                                          0xFF081D5C,
+                                                        ),
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            19,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      'Cancel',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: const Color(
+                                                          0xFF081D5C,
+                                                        ),
+                                                        fontSize: 25,
+                                                        fontFamily:
+                                                            'OPTIFrankfurter-Medium',
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
                               );
                             },
                           ),
@@ -470,127 +518,166 @@ class _SettingsPageState extends State<SettingsPage> {
                             onTap: () {
                               showDialog(
                                 context: context,
-                                builder: (context) => Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(19),
-                                  ),
-                                  child: Container(
-                                    width: 271,
-                                    height: 304,
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          left: 45,
-                                          top: 32,
-                                          child: SizedBox(
-                                            width: 181,
-                                            height: 75,
-                                            child: Text(
-                                              'Are you sure you want to delete your account?',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: const Color(0xFF081D5C),
-                                                fontSize: 24,
-                                                fontFamily: 'Questrial',
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          left: 30,
-                                          top: 125,
-                                          child: GestureDetector(
-                                            onTap: () async {
-                                              try {
-                                                User? user = FirebaseAuth.instance.currentUser;
-                                                if (user == null) {
-                                                  throw FirebaseAuthException(
-                                                    code: 'no-user',
-                                                    message: 'No user is signed in.',
-                                                  );
-                                                }
-                                                await user.delete();
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) => const SignIn(),
-                                                  ),
-                                                );
-                                              } catch (e) {
-                                                Navigator.pop(context);
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(content: Text('Error deleting account: $e')),
-                                                );
-                                              }
-                                            },
-                                            child: Container(
-                                              width: 211,
-                                              height: 53,
-                                              decoration: ShapeDecoration(
-                                                color: const Color(0xFFFED1D1),
-                                                shape: RoundedRectangleBorder(
-                                                  side: BorderSide(
-                                                    width: 2,
-                                                    color: const Color(0xFFC02E2E),
-                                                  ),
-                                                  borderRadius: BorderRadius.circular(19),
-                                                ),
-                                              ),
-                                              child: Center(
+                                builder:
+                                    (context) => Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(19),
+                                      ),
+                                      child: SizedBox(
+                                        width: 271,
+                                        height: 304,
+                                        child: Stack(
+                                          children: [
+                                            Positioned(
+                                              left: 45,
+                                              top: 32,
+                                              child: SizedBox(
+                                                width: 181,
+                                                height: 75,
                                                 child: Text(
-                                                  'Delete',
+                                                  'Are you sure you want to delete your account?',
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
-                                                    color: const Color(0xFFC02E2E),
-                                                    fontSize: 25,
-                                                    fontFamily: 'OPTIFrankfurter-Medium',
-                                                    fontWeight: FontWeight.w500,
+                                                    color: const Color(
+                                                      0xFF081D5C,
+                                                    ),
+                                                    fontSize: 24,
+                                                    fontFamily: 'Questrial',
+                                                    fontWeight: FontWeight.w400,
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          left: 30,
-                                          top: 204,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Container(
-                                              width: 211,
-                                              height: 53,
-                                              decoration: ShapeDecoration(
-                                                color: const Color(0xFFD1E5FE),
-                                                shape: RoundedRectangleBorder(
-                                                  side: BorderSide(
-                                                    width: 2,
-                                                    color: const Color(0xFF081D5C),
+                                            Positioned(
+                                              left: 30,
+                                              top: 125,
+                                              child: GestureDetector(
+                                                onTap: () async {
+                                                  try {
+                                                    User? user =
+                                                        FirebaseAuth
+                                                            .instance
+                                                            .currentUser;
+                                                    if (user == null) {
+                                                      throw FirebaseAuthException(
+                                                        code: 'no-user',
+                                                        message:
+                                                            'No user is signed in.',
+                                                      );
+                                                    }
+                                                    await user.delete();
+                                                    Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder:
+                                                            (context) =>
+                                                                const SignIn(),
+                                                      ),
+                                                    );
+                                                  } catch (e) {
+                                                    Navigator.pop(context);
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          'Error deleting account: $e',
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                child: Container(
+                                                  width: 211,
+                                                  height: 53,
+                                                  decoration: ShapeDecoration(
+                                                    color: const Color(
+                                                      0xFFFED1D1,
+                                                    ),
+                                                    shape: RoundedRectangleBorder(
+                                                      side: BorderSide(
+                                                        width: 2,
+                                                        color: const Color(
+                                                          0xFFC02E2E,
+                                                        ),
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            19,
+                                                          ),
+                                                    ),
                                                   ),
-                                                  borderRadius: BorderRadius.circular(19),
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  'Cancel',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: const Color(0xFF081D5C),
-                                                    fontSize: 25,
-                                                    fontFamily: 'OPTIFrankfurter-Medium',
-                                                    fontWeight: FontWeight.w500,
+                                                  child: Center(
+                                                    child: Text(
+                                                      'Delete',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: const Color(
+                                                          0xFFC02E2E,
+                                                        ),
+                                                        fontSize: 25,
+                                                        fontFamily:
+                                                            'OPTIFrankfurter-Medium',
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
+                                            Positioned(
+                                              left: 30,
+                                              top: 204,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Container(
+                                                  width: 211,
+                                                  height: 53,
+                                                  decoration: ShapeDecoration(
+                                                    color: const Color(
+                                                      0xFFD1E5FE,
+                                                    ),
+                                                    shape: RoundedRectangleBorder(
+                                                      side: BorderSide(
+                                                        width: 2,
+                                                        color: const Color(
+                                                          0xFF081D5C,
+                                                        ),
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            19,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      'Cancel',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: const Color(
+                                                          0xFF081D5C,
+                                                        ),
+                                                        fontSize: 25,
+                                                        fontFamily:
+                                                            'OPTIFrankfurter-Medium',
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
                               );
                             },
                           ),
@@ -621,7 +708,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildAccountItem(BuildContext context, {required String title, String? value, required VoidCallback onTap}) {
+  Widget _buildAccountItem(
+    BuildContext context, {
+    required String title,
+    String? value,
+    required VoidCallback onTap,
+  }) {
     return ListTile(
       title: Text(
         title,
@@ -632,23 +724,28 @@ class _SettingsPageState extends State<SettingsPage> {
           fontWeight: FontWeight.w500,
         ),
       ),
-      subtitle: value != null
-          ? Text(
-        value,
-        style: const TextStyle(
-          color: Color(0xFF081D5C),
-          fontSize: 18,
-          fontFamily: 'Questrial',
-          fontWeight: FontWeight.w400,
-        ),
-      )
-          : null,
+      subtitle:
+          value != null
+              ? Text(
+                value,
+                style: const TextStyle(
+                  color: Color(0xFF081D5C),
+                  fontSize: 18,
+                  fontFamily: 'Questrial',
+                  fontWeight: FontWeight.w400,
+                ),
+              )
+              : null,
       trailing: const Icon(Icons.edit, color: Color(0xFF081D5C)),
       onTap: onTap,
     );
   }
 
-  Widget _buildAboutItem(BuildContext context, {required String title, required VoidCallback onTap}) {
+  Widget _buildAboutItem(
+    BuildContext context, {
+    required String title,
+    required VoidCallback onTap,
+  }) {
     return ListTile(
       title: Text(
         title,
@@ -672,7 +769,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildActionButton(BuildContext context, {required String title, required double width, required VoidCallback onTap}) {
+  Widget _buildActionButton(
+    BuildContext context, {
+    required String title,
+    required double width,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

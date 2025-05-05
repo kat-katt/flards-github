@@ -3,7 +3,7 @@ import 'newfolder.dart';
 import 'create_flashcard_set_page.dart';
 import 'folders.dart';
 import 'item.dart';
-import 'profile.dart'; 
+import 'profile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -72,7 +72,9 @@ class _HomePageState extends State<HomePage> {
                             height: 19,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: NetworkImage("https://placehold.co/23x19"),
+                                image: NetworkImage(
+                                  "https://placehold.co/23x19",
+                                ),
                                 fit: BoxFit.fill,
                               ),
                             ),
@@ -99,8 +101,14 @@ class _HomePageState extends State<HomePage> {
                         showGeneralDialog(
                           context: context,
                           barrierDismissible: false,
-                          pageBuilder: (context, _, __) => CreateFlashcardSetPage(),
-                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                          pageBuilder:
+                              (context, _, __) => CreateFlashcardSetPage(),
+                          transitionBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -130,7 +138,9 @@ class _HomePageState extends State<HomePage> {
                               height: 37,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage("https://placehold.co/37x37"),
+                                  image: NetworkImage(
+                                    "https://placehold.co/37x37",
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -161,7 +171,12 @@ class _HomePageState extends State<HomePage> {
                           context: context,
                           barrierDismissible: false,
                           pageBuilder: (context, _, __) => const NewFolder(),
-                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                          transitionBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -196,7 +211,9 @@ class _HomePageState extends State<HomePage> {
                               height: 33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage("https://placehold.co/33x33"),
+                                  image: NetworkImage(
+                                    "https://placehold.co/33x33",
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -456,116 +473,143 @@ class _HomePageState extends State<HomePage> {
                           Positioned(
                             left: 24,
                             top: 500,
-                            child: folders.isEmpty
-                                ? Container(
-                              width: 312,
-                              height: 150,
-                              decoration: ShapeDecoration(
-                                color: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(17),
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: Image.asset(
-                                      "assets/folder.png",
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'No Folders Yet!',
-                                    style: TextStyle(
-                                      color: const Color(0xFF081D5C),
-                                      fontSize: 18,
-                                      fontFamily: 'Questrial',
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Tap Create to Get Started!',
-                                    style: TextStyle(
-                                      color: const Color(0xFF081D5C),
-                                      fontSize: 14,
-                                      fontFamily: 'Questrial',
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                                : Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                              child: Container(
-                                width: 312,
-                                height: 150,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  physics: const BouncingScrollPhysics(),
-                                  itemCount: folders.length,
-                                  itemBuilder: (context, index) {
-                                    final folder = folders[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.only(right: 24),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => Folders(folder: folder),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          width: 150,
-                                          decoration: ShapeDecoration(
-                                            color: Colors.transparent,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(17),
-                                            ),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                width: 50,
-                                                height: 50,
-                                                child: Image.asset(
-                                                  "assets/folderr.png",
-                                                  fit: BoxFit.contain,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                child: Text(
-                                                  folder.name,
-                                                  style: TextStyle(
-                                                    color: const Color(0xFF081D5C),
-                                                    fontSize: 16,
-                                                    fontFamily: 'Questrial',
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ],
+                            child:
+                                folders.isEmpty
+                                    ? Container(
+                                      width: 312,
+                                      height: 150,
+                                      decoration: ShapeDecoration(
+                                        color: Colors.transparent,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            17,
                                           ),
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: 50,
+                                            height: 50,
+                                            child: Image.asset(
+                                              "assets/folder.png",
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'No Folders Yet!',
+                                            style: TextStyle(
+                                              color: const Color(0xFF081D5C),
+                                              fontSize: 18,
+                                              fontFamily: 'Questrial',
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Tap Create to Get Started!',
+                                            style: TextStyle(
+                                              color: const Color(0xFF081D5C),
+                                              fontSize: 14,
+                                              fontFamily: 'Questrial',
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                    : Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                      ),
+                                      child: SizedBox(
+                                        width: 312,
+                                        height: 150,
+                                        child: ListView.builder(
+                                          scrollDirection: Axis.horizontal,
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          itemCount: folders.length,
+                                          itemBuilder: (context, index) {
+                                            final folder = folders[index];
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                right: 24,
+                                              ),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (context) => Folders(
+                                                            folder: folder,
+                                                          ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  width: 150,
+                                                  decoration: ShapeDecoration(
+                                                    color: Colors.transparent,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            17,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: 50,
+                                                        height: 50,
+                                                        child: Image.asset(
+                                                          "assets/folderr.png",
+                                                          fit: BoxFit.contain,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 8,
+                                                            ),
+                                                        child: Text(
+                                                          folder.name,
+                                                          style: TextStyle(
+                                                            color: const Color(
+                                                              0xFF081D5C,
+                                                            ),
+                                                            fontSize: 16,
+                                                            fontFamily:
+                                                                'Questrial',
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          maxLines: 2,
+                                                          overflow:
+                                                              TextOverflow
+                                                                  .ellipsis,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
                           ),
                         ],
                       ),
@@ -586,17 +630,21 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 0 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 0
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 0
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 0
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.home, size: 30),
               ),
@@ -610,17 +658,21 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 1 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 1
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 1
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 1
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.add_circle_outline, size: 30),
               ),
@@ -634,17 +686,21 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 2 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 2
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 2
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 2
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.person, size: 30),
               ),

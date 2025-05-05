@@ -10,12 +10,15 @@ class FlashcardSetPreviewPage extends StatefulWidget {
   const FlashcardSetPreviewPage({super.key, required this.setId});
 
   @override
-  _FlashcardSetPreviewPageState createState() => _FlashcardSetPreviewPageState();
+  _FlashcardSetPreviewPageState createState() =>
+      _FlashcardSetPreviewPageState();
 }
 
 class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
   final _pageController = PageController(viewportFraction: 0.8);
-  int _currentPage = 0;
+  var _currentPage = 0;
+
+  // Display the current page number for debugging or user feedback
 
   @override
   void dispose() {
@@ -28,10 +31,11 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFD1E5FE),
       body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('sets')
-            .doc(widget.setId)
-            .snapshots(),
+        stream:
+            FirebaseFirestore.instance
+                .collection('sets')
+                .doc(widget.setId)
+                .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -46,7 +50,6 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
           final setData = snapshot.data!.data() as Map<String, dynamic>;
           final String title = setData['title'] ?? 'Untitled';
           final List<dynamic> cards = setData['cards'] ?? [];
-          final String userId = setData['userId'] ?? '';
           final String username =
               FirebaseAuth.instance.currentUser?.displayName ?? 'parabeenFree';
 
@@ -152,7 +155,9 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
                                 // Definition
                                 Center(
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
                                     child: SizedBox(
                                       width: 145,
                                       height: 170,
@@ -268,15 +273,30 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
                 child: SizedBox(
                   width: 293,
                   height: 111,
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      color: Color(0xFF081D5C),
-                      fontSize: 32,
-                      fontFamily: 'OPTIFrankfurter-Medium',
-                      fontWeight: FontWeight.w500,
-                      height: 1.20,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Color(0xFF081D5C),
+                          fontSize: 32,
+                          fontFamily: 'OPTIFrankfurter-Medium',
+                          fontWeight: FontWeight.w500,
+                          height: 1.20,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Current Page: ${_currentPage + 1}',
+                        style: const TextStyle(
+                          color: Color(0xFF081D5C),
+                          fontSize: 16,
+                          fontFamily: 'Questrial',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -343,7 +363,9 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
                 child: GestureDetector(
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Share feature coming soon!')),
+                      const SnackBar(
+                        content: Text('Share feature coming soon!'),
+                      ),
                     );
                   },
                   child: Image.asset(
@@ -360,7 +382,9 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
                 child: GestureDetector(
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Study feature coming soon!')),
+                      const SnackBar(
+                        content: Text('Study feature coming soon!'),
+                      ),
                     );
                   },
                   child: Container(
