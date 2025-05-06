@@ -38,8 +38,7 @@ class _HomePageState extends State<HomePage> {
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Container(
-            width: 300,
-            padding: const EdgeInsets.all(20),
+            width: 360,
             decoration: BoxDecoration(
               color: const Color(0xFFD1E5FE),
               borderRadius: BorderRadius.circular(20),
@@ -328,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Positioned(
-                            left: 39,
+                            left: 25,
                             top: 98,
                             child: Container(
                               width: 316,
@@ -378,14 +377,6 @@ class _HomePageState extends State<HomePage> {
                                   image: AssetImage("assets/logo.png"),
                                   fit: BoxFit.fill,
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0x3F000000),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 4),
-                                    spreadRadius: 0,
-                                  ),
-                                ],
                               ),
                             ),
                           ),

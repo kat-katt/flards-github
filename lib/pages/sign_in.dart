@@ -548,7 +548,7 @@ class _SignInState extends State<SignIn> {
                   ),
                   if (_errorMessage != null)
                     Positioned(
-                      left: 76,
+                      left: 77,
                       top: 620,
                       child: Text(
                         _errorMessage!,
