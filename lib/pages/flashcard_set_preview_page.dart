@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'flashcard_settings_page.dart';
+import 'flashcard_settings_page.dart' as flashcard;
 
 class FlashcardSetPreviewPage extends StatefulWidget {
   final String setId;
@@ -17,8 +17,6 @@ class FlashcardSetPreviewPage extends StatefulWidget {
 class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
   final _pageController = PageController(viewportFraction: 0.8);
   var _currentPage = 0;
-
-  // Display the current page number for debugging or user feedback
 
   @override
   void dispose() {
@@ -85,13 +83,19 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
                 left: 304,
                 top: 77,
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SettingsPage(),
-                      ),
+                  onTap: () async {
+                    final result = await showGeneralDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      barrierLabel: 'Dismiss',
+                      pageBuilder:
+                          (context, _, __) =>
+                              flashcard.SetOptions(setId: widget.setId),
                     );
+                    if (result != null &&
+                        (result as Map<String, dynamic>)['deleted'] == true) {
+                      Navigator.pop(context); // Return to previous page
+                    }
                   },
                   child: Image.asset(
                     'assets/icons/settings.png',
@@ -106,14 +110,14 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
                 right: 0,
                 top: 176,
                 child: SizedBox(
-                  height: 310, // Increased to accommodate card height + padding
+                  height: 310,
                   child: PageView.builder(
                     controller: _pageController,
                     clipBehavior: Clip.hardEdge,
                     physics: const ClampingScrollPhysics(),
                     itemCount: cards.length,
                     onPageChanged: (index) {
-                      print('Page changed to: $index'); // Debug
+                      print('Page changed to: $index');
                       setState(() {
                         _currentPage = index;
                       });
@@ -208,7 +212,7 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
                                   left: 140,
                                   top: 253,
                                   child: Transform.rotate(
-                                    angle: 3.14159, // 180 degrees
+                                    angle: 3.14159,
                                     child: SizedBox(
                                       width: 38,
                                       height: 26,
@@ -230,7 +234,7 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
                                   left: 149,
                                   top: 229,
                                   child: Transform.rotate(
-                                    angle: 3.14159, // 180 degrees
+                                    angle: 3.14159,
                                     child: Image.asset(
                                       'assets/icons/flardspade.png',
                                       width: 20,

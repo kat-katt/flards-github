@@ -46,11 +46,13 @@ class Folders extends StatelessWidget {
                 child: Container(
                   width: 45,
                   height: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                  ),
+                  decoration: BoxDecoration(color: Colors.transparent),
                   child: const Center(
-                    child: Icon(Icons.arrow_back, color: Color(0xFF081D5C), size: 24),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Color(0xFF081D5C),
+                      size: 24,
+                    ),
                   ),
                 ),
               ),
@@ -72,7 +74,7 @@ class Folders extends StatelessWidget {
                       blurRadius: 4,
                       offset: Offset(0, 4),
                       spreadRadius: 0,
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -156,11 +158,13 @@ class Folders extends StatelessWidget {
                     context: context,
                     barrierDismissible: false,
                     pageBuilder: (context, _, __) => CreateFlashcardSetPage(),
-                    transitionBuilder: (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      );
+                    transitionBuilder: (
+                      context,
+                      animation,
+                      secondaryAnimation,
+                      child,
+                    ) {
+                      return FadeTransition(opacity: animation, child: child);
                     },
                   );
                 },

@@ -23,7 +23,7 @@ class Cccreate extends StatelessWidget {
                     height: 45,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage("https://placehold.co/45x45"),
+                        image: AssetImage("assets/icons/back.png"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -37,7 +37,7 @@ class Cccreate extends StatelessWidget {
                     height: 19,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage("https://placehold.co/23x19"),
+                        image: AssetImage("assets/icons/back.png"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -91,9 +91,7 @@ class Cccreate extends StatelessWidget {
                               height: 37,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage(
-                                    "https://placehold.co/37x37",
-                                  ),
+                                  image: AssetImage("assets/icons/back.png"),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -153,9 +151,7 @@ class Cccreate extends StatelessWidget {
                               height: 33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage(
-                                    "https://placehold.co/33x33",
-                                  ),
+                                  image: AssetImage("assets/icons/back.png"),
                                   fit: BoxFit.cover,
                                 ),
                               ),

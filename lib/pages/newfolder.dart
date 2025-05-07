@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewFolder extends StatefulWidget {
   const NewFolder({super.key});
@@ -11,6 +13,47 @@ class _NewFolderState extends State<NewFolder> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _tagsController = TextEditingController();
+
+  Future<void> _saveFolder() async {
+    if (_nameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a folder name')),
+      );
+      return;
+    }
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw FirebaseAuthException(
+          code: 'no-user',
+          message: 'No user is signed in.',
+        );
+      }
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('folders')
+          .add({
+            'name': _nameController.text,
+            'description': _descriptionController.text,
+            'tags':
+                _tagsController.text
+                    .split(',')
+                    .map((tag) => tag.trim())
+                    .toList(),
+            'createdAt': FieldValue.serverTimestamp(),
+            'isPrivate': true, // Assuming private by default
+          });
+
+      Navigator.pop(context); // Return to previous screen
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error saving folder: $e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,60 +85,30 @@ class _NewFolderState extends State<NewFolder> {
               ),
             ),
             Positioned(
-              left: 308,
-              top: 53,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pop(context); // Back to HomePage (as before)
-                },
-                child: Container(
-                  width: 45,
-                  height: 45,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage("https://placehold.co/45x45"),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.close,
-                      color: Color(0xFF081D5C),
-                      size: 24,
-                    ), // Using a close icon
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
               left: 40,
               top: 53,
               child: GestureDetector(
                 onTap: () {
                   Navigator.pop(
                     context,
-                  ); // Navigate back to the previous screen (HomePage)
+                  ); // Navigate back to the previous screen
                 },
-                child: Container(
+                child: Image.asset(
+                  'assets/icons/back.png',
                   width: 45,
                   height: 45,
-                  decoration: BoxDecoration(
-                    // You can remove the image decoration if you just want the icon
-                    // image: DecorationImage(
-                    //   image: NetworkImage("https://placehold.co/45x45"),
-                    //   fit: BoxFit.fill,
-                    // ),
-                    color:
-                        Colors
-                            .transparent, // Make the background transparent for the icon
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Color(0xFF081D5C),
-                      size: 24,
-                    ), // Using a back arrow icon
-                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 308,
+              top: 53,
+              child: GestureDetector(
+                onTap: _saveFolder, // Save folder to Firestore
+                child: Image.asset(
+                  'assets/icons/save.png',
+                  width: 45,
+                  height: 45,
                 ),
               ),
             ),
@@ -358,47 +371,6 @@ class _NewFolderState extends State<NewFolder> {
                       ),
                       SizedBox(width: 23, height: 25, child: Placeholder()),
                     ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 28,
-              top: 753,
-              child: GestureDetector(
-                onTap: () {
-                  // Add your add set logic here
-                  print('Add Set tapped');
-                  print('Name: ${_nameController.text}');
-                  print('Description: ${_descriptionController.text}');
-                  print('Tags: ${_tagsController.text}');
-                  Navigator.pop(context); // Return to HomePage
-                },
-                child: Container(
-                  width: 331,
-                  height: 45.75,
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFFFFF6ED),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(
-                        width: 2.50,
-                        strokeAlign: BorderSide.strokeAlignOutside,
-                        color: Color(0xFF081D5C),
-                      ),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Add Set',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF081D5C),
-                        fontSize: 21,
-                        fontFamily: 'OPTIFrankfurter-Medium',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
                   ),
                 ),
               ),

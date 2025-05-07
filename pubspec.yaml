@@ -29,6 +29,8 @@ flutter:
     - assets/apple.png
     - assets/change pfp.png
     - assets/create.png
+    - assets/create folder.png
+    - assets/create set.png
     - assets/edit.png
     - assets/eye.png
     - assets/facebook.png
@@ -54,6 +56,15 @@ flutter:
     - assets/search.png
     - assets/spades.png
     - assets/spade_back.png
+    - assets/icons/add.png
+    - assets/icons/back.png
+    - assets/icons/dot.png
+    - assets/icons/flardspade.png
+    - assets/icons/save.png
+    - assets/icons/settings.png
+    - assets/icons/share.png
+    - assets/icons/terms.png
+    - assets/icons/user.png
   fonts:
     - family: OPTIFrankfurter-Medium
       fonts:

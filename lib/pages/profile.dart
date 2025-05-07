@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/item.dart';
 import 'home.dart';
 import 'change_bio.dart';
 import 'change_pfp.dart';
-import 'logout_prompt.dart';
+import 'settings.dart';
 import 'create_flashcard_set_page.dart';
 import 'newfolder.dart';
-import 'item.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -34,7 +34,7 @@ class _ProfileState extends State<Profile> {
       User? user = _auth.currentUser;
       if (user != null) {
         DocumentSnapshot userDoc =
-        await _firestore.collection('users').doc(user.uid).get();
+            await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists && userDoc['profilePicture'] != null) {
           setState(() {
             _profilePicture = userDoc['profilePicture'];
@@ -63,7 +63,7 @@ class _ProfileState extends State<Profile> {
     } catch (e) {
       print('Error updating profile picture: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to log out')),
+        const SnackBar(content: Text('Failed to update profile picture')),
       );
     }
   }
@@ -102,12 +102,9 @@ class _ProfileState extends State<Profile> {
   }
 
   void _logout() {
-    showDialog(
-      context: context,
-      builder: (context) => const Dialog(
-        backgroundColor: Colors.transparent,
-        child: LogOutConfirmation(),
-      ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsPage()),
     );
   }
 
@@ -115,11 +112,12 @@ class _ProfileState extends State<Profile> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChangeProfile(
-          onProfilePictureChanged: (newProfilePicture) {
-            _updateProfilePicture(newProfilePicture);
-          },
-        ),
+        builder:
+            (context) => ChangeProfile(
+              onProfilePictureChanged: (newProfilePicture) {
+                _updateProfilePicture(newProfilePicture);
+              },
+            ),
       ),
     );
   }
@@ -165,7 +163,9 @@ class _ProfileState extends State<Profile> {
                             height: 19,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: NetworkImage("https://placehold.co/23x19"),
+                                image: NetworkImage(
+                                  "https://placehold.co/23x19",
+                                ),
                                 fit: BoxFit.fill,
                               ),
                             ),
@@ -192,8 +192,14 @@ class _ProfileState extends State<Profile> {
                         showGeneralDialog(
                           context: context,
                           barrierDismissible: false,
-                          pageBuilder: (context, _, __) => CreateFlashcardSetPage(),
-                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                          pageBuilder:
+                              (context, _, __) => CreateFlashcardSetPage(),
+                          transitionBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -223,7 +229,9 @@ class _ProfileState extends State<Profile> {
                               height: 37,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage("https://placehold.co/37x37"),
+                                  image: NetworkImage(
+                                    "https://placehold.co/37x37",
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -254,7 +262,12 @@ class _ProfileState extends State<Profile> {
                           context: context,
                           barrierDismissible: false,
                           pageBuilder: (context, _, __) => const NewFolder(),
-                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                          transitionBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -262,6 +275,7 @@ class _ProfileState extends State<Profile> {
                           },
                         );
                         if (result != null && result is Item && mounted) {
+                          // Ensure 'Item' is defined or imported
                           setState(() {
                             // Handle folder addition if needed
                           });
@@ -289,7 +303,9 @@ class _ProfileState extends State<Profile> {
                               height: 33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage("https://placehold.co/33x33"),
+                                  image: NetworkImage(
+                                    "https://placehold.co/33x33",
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -659,17 +675,21 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 0 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 0
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 0
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 0
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.home, size: 30),
               ),
@@ -683,17 +703,21 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 1 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 1
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 1
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 1
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.add_circle_outline, size: 30),
               ),
@@ -707,17 +731,21 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 2 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 2
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 2
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 2
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.person, size: 30),
               ),
