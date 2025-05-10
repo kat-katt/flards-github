@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../widgets/item.dart';
 import 'home.dart';
 import 'change_bio.dart';
 import 'change_pfp.dart';
-import 'settings.dart';
+import 'logout_prompt.dart';
 import 'create_flashcard_set_page.dart';
 import 'newfolder.dart';
+import 'item.dart';
+import 'folders.dart';
+import 'flashcard_set_preview_page.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -19,22 +21,25 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   int _selectedIndex = 2;
   String _bio = 'Add a bio...';
-  String _profilePicture = 'assets/profile.png'; // Default profile picture
+  String _profilePicture = 'assets/profile.png';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late Future<List<Item>> _foldersFuture;
+  late Future<List<Item>> _setsFuture;
 
   @override
   void initState() {
     super.initState();
     _loadProfilePicture();
+    _loadFolders();
+    _loadSets();
   }
 
   Future<void> _loadProfilePicture() async {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists && userDoc['profilePicture'] != null) {
           setState(() {
             _profilePicture = userDoc['profilePicture'];
@@ -63,9 +68,49 @@ class _ProfileState extends State<Profile> {
     } catch (e) {
       print('Error updating profile picture: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update profile picture')),
+        const SnackBar(content: Text('Failed to log out')),
       );
     }
+  }
+
+  Future<List<Item>> fetchFolders() async {
+    final user = _auth.currentUser;
+    if (user == null) return [];
+    print("Fetching folders for UID: ${user.uid}");
+
+    final querySnapshot = await _firestore
+        .collection('folders')
+        .where('user_id', isEqualTo: user.uid)
+        .get();
+    return querySnapshot.docs.map((doc) => Item.fromMap(doc.data() as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<Item>> fetchSets() async {
+    final user = _auth.currentUser;
+    if (user == null) return [];
+    print("Fetching sets for UID: ${user.uid}");
+
+    final querySnapshot = await _firestore
+        .collection('sets')
+        .where('user_id', isEqualTo: user.uid)
+        .get();
+    return querySnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      data['id'] = doc.id; // Add the document ID to the data
+      return Item.fromMap(data);
+    }).toList();
+  }
+
+  Future<void> _loadFolders() async {
+    setState(() {
+      _foldersFuture = fetchFolders();
+    });
+  }
+
+  Future<void> _loadSets() async {
+    setState(() {
+      _setsFuture = fetchSets();
+    });
   }
 
   void _onItemTapped(int index) {
@@ -77,7 +122,9 @@ class _ProfileState extends State<Profile> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
-      );
+      ).then((_) {
+        // Refresh when returning to HomePage if needed
+      });
     } else if (index == 1) {
       _showCreateDialog();
     }
@@ -102,9 +149,12 @@ class _ProfileState extends State<Profile> {
   }
 
   void _logout() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SettingsPage()),
+    showDialog(
+      context: context,
+      builder: (context) => const Dialog(
+        backgroundColor: Colors.transparent,
+        child: LogOutConfirmation(),
+      ),
     );
   }
 
@@ -112,12 +162,11 @@ class _ProfileState extends State<Profile> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => ChangeProfile(
-              onProfilePictureChanged: (newProfilePicture) {
-                _updateProfilePicture(newProfilePicture);
-              },
-            ),
+        builder: (context) => ChangeProfile(
+          onProfilePictureChanged: (newProfilePicture) {
+            _updateProfilePicture(newProfilePicture);
+          },
+        ),
       ),
     );
   }
@@ -163,9 +212,7 @@ class _ProfileState extends State<Profile> {
                             height: 19,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: NetworkImage(
-                                  "https://placehold.co/23x19",
-                                ),
+                                image: NetworkImage("https://placehold.co/23x19"),
                                 fit: BoxFit.fill,
                               ),
                             ),
@@ -187,25 +234,22 @@ class _ProfileState extends State<Profile> {
                     ),
                     const SizedBox(height: 20),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        showGeneralDialog(
+                        final result = await showGeneralDialog(
                           context: context,
                           barrierDismissible: false,
-                          pageBuilder:
-                              (context, _, __) => CreateFlashcardSetPage(),
-                          transitionBuilder: (
-                            context,
-                            animation,
-                            secondaryAnimation,
-                            child,
-                          ) {
+                          pageBuilder: (context, _, __) => CreateFlashcardSetPage(),
+                          transitionBuilder: (context, animation, secondaryAnimation, child) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
                             );
                           },
                         );
+                        if (result != null && mounted) {
+                          _loadSets(); // Refresh sets after creation
+                        }
                       },
                       child: Container(
                         width: 211,
@@ -229,9 +273,7 @@ class _ProfileState extends State<Profile> {
                               height: 37,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage(
-                                    "https://placehold.co/37x37",
-                                  ),
+                                  image: NetworkImage("https://placehold.co/37x37"),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -262,12 +304,7 @@ class _ProfileState extends State<Profile> {
                           context: context,
                           barrierDismissible: false,
                           pageBuilder: (context, _, __) => const NewFolder(),
-                          transitionBuilder: (
-                            context,
-                            animation,
-                            secondaryAnimation,
-                            child,
-                          ) {
+                          transitionBuilder: (context, animation, secondaryAnimation, child) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -275,10 +312,7 @@ class _ProfileState extends State<Profile> {
                           },
                         );
                         if (result != null && result is Item && mounted) {
-                          // Ensure 'Item' is defined or imported
-                          setState(() {
-                            // Handle folder addition if needed
-                          });
+                          _loadFolders();
                         }
                       },
                       child: Container(
@@ -303,9 +337,7 @@ class _ProfileState extends State<Profile> {
                               height: 33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage(
-                                    "https://placehold.co/33x33",
-                                  ),
+                                  image: NetworkImage("https://placehold.co/33x33"),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -549,48 +581,112 @@ class _ProfileState extends State<Profile> {
                         Positioned(
                           left: 24,
                           top: 270,
-                          child: Container(
-                            width: 312,
-                            height: 150,
-                            decoration: ShapeDecoration(
-                              color: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(17),
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: Image.asset(
-                                    "assets/folder.png",
-                                    fit: BoxFit.contain,
+                          child: FutureBuilder<List<Item>>(
+                            future: _setsFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              }
+                              if (snapshot.hasError) {
+                                return Center(child: Text('Error: ${snapshot.error}'));
+                              }
+                              final sets = snapshot.data ?? [];
+                              if (sets.isEmpty) {
+                                return Container(
+                                  width: 312,
+                                  height: 150,
+                                  decoration: ShapeDecoration(
+                                    color: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(17),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  'No Sets Yet!',
-                                  style: TextStyle(
-                                    color: Color(0xFF081D5C),
-                                    fontSize: 18,
-                                    fontFamily: 'Questrial',
-                                    fontWeight: FontWeight.w500,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: Image.asset(
+                                          "assets/folder.png",
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        'No Sets Yet!',
+                                        style: TextStyle(
+                                          color: Color(0xFF081D5C),
+                                          fontSize: 18,
+                                          fontFamily: 'Questrial',
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text(
+                                        'Tap Create to Get Started!',
+                                        style: TextStyle(
+                                          color: Color(0xFF081D5C),
+                                          fontSize: 14,
+                                          fontFamily: 'Questrial',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                );
+                              }
+                              return SizedBox(
+                                width: 312,
+                                height: 150,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: sets.length,
+                                  itemBuilder: (context, index) {
+                                    final set = sets[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => FlashcardSetPreviewPage(setId: set.id),
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              width: 40,
+                                              height: 40,
+                                              child: Image.asset(
+                                                "assets/folder.png",
+                                                fit: BoxFit.contain,
+                                              ),
+                                            ),
+                                            SizedBox(height: 8),
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(
+                                                set.name,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Color(0xFF081D5C),
+                                                  fontSize: 14,
+                                                  fontFamily: 'Questrial',
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Tap Create to Get Started!',
-                                  style: TextStyle(
-                                    color: Color(0xFF081D5C),
-                                    fontSize: 14,
-                                    fontFamily: 'Questrial',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
                         ),
                         Positioned(
@@ -613,48 +709,109 @@ class _ProfileState extends State<Profile> {
                         Positioned(
                           left: 24,
                           top: 500,
-                          child: Container(
-                            width: 312,
-                            height: 150,
-                            decoration: ShapeDecoration(
-                              color: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(17),
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: Image.asset(
-                                    "assets/folder.png",
-                                    fit: BoxFit.contain,
+                          child: FutureBuilder<List<Item>>(
+                            future: _foldersFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              }
+                              if (snapshot.hasError) {
+                                return Center(child: Text('Error: ${snapshot.error}'));
+                              }
+                              final folders = snapshot.data ?? [];
+                              if (folders.isEmpty) {
+                                return Container(
+                                  width: 312,
+                                  height: 150,
+                                  decoration: ShapeDecoration(
+                                    color: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(17),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  'No Folders Yet!',
-                                  style: TextStyle(
-                                    color: Color(0xFF081D5C),
-                                    fontSize: 18,
-                                    fontFamily: 'Questrial',
-                                    fontWeight: FontWeight.w500,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: Image.asset(
+                                          "assets/folder.png",
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        'No Folders Yet!',
+                                        style: TextStyle(
+                                          color: Color(0xFF081D5C),
+                                          fontSize: 18,
+                                          fontFamily: 'Questrial',
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text(
+                                        'Tap Create to Get Started!',
+                                        style: TextStyle(
+                                          color: Color(0xFF081D5C),
+                                          fontSize: 14,
+                                          fontFamily: 'Questrial',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                );
+                              }
+                              return SizedBox(
+                                width: 312,
+                                height: 150,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: folders.length,
+                                  itemBuilder: (context, index) {
+                                    final folder = folders[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Folders(folder: folder),
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.folder,
+                                              color: Color(0xFF081D5C),
+                                              size: 40,
+                                            ),
+                                            SizedBox(height: 8),
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(
+                                                folder.name,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Color(0xFF081D5C),
+                                                  fontSize: 14,
+                                                  fontFamily: 'Questrial',
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Tap Create to Get Started!',
-                                  style: TextStyle(
-                                    color: Color(0xFF081D5C),
-                                    fontSize: 14,
-                                    fontFamily: 'Questrial',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -675,21 +832,17 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 0
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 0 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 0
-                          ? [
-                            const BoxShadow(
-                              color: Colors.blue,
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 0
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
                 child: const Icon(Icons.home, size: 30),
               ),
@@ -703,21 +856,17 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 1
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 1 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 1
-                          ? [
-                            const BoxShadow(
-                              color: Colors.blue,
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 1
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
                 child: const Icon(Icons.add_circle_outline, size: 30),
               ),
@@ -731,21 +880,17 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedIndex == 2
-                          ? const Color(0xFFE0E0E0)
-                          : const Color(0xFFF1F1F1),
+                  color: _selectedIndex == 2 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow:
-                      _selectedIndex == 2
-                          ? [
-                            const BoxShadow(
-                              color: Colors.blue,
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                            ),
-                          ]
-                          : [],
+                  boxShadow: _selectedIndex == 2
+                      ? [
+                    const BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 10,
+                      spreadRadius: 3,
+                    ),
+                  ]
+                      : [],
                 ),
                 child: const Icon(Icons.person, size: 30),
               ),
