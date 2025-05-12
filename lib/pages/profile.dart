@@ -1,10 +1,10 @@
+import 'package:flard/pages/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home.dart';
 import 'change_bio.dart';
 import 'change_pfp.dart';
-import 'logout_prompt.dart';
 import 'create_flashcard_set_page.dart';
 import 'newfolder.dart';
 import 'item.dart';
@@ -39,7 +39,8 @@ class _ProfileState extends State<Profile> {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists && userDoc['profilePicture'] != null) {
           setState(() {
             _profilePicture = userDoc['profilePicture'];
@@ -67,9 +68,9 @@ class _ProfileState extends State<Profile> {
       }
     } catch (e) {
       print('Error updating profile picture: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to log out')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to log out')));
     }
   }
 
@@ -78,11 +79,12 @@ class _ProfileState extends State<Profile> {
     if (user == null) return [];
     print("Fetching folders for UID: ${user.uid}");
 
-    final querySnapshot = await _firestore
-        .collection('folders')
-        .where('user_id', isEqualTo: user.uid)
-        .get();
-    return querySnapshot.docs.map((doc) => Item.fromMap(doc.data() as Map<String, dynamic>)).toList();
+    final querySnapshot =
+        await _firestore
+            .collection('folders')
+            .where('user_id', isEqualTo: user.uid)
+            .get();
+    return querySnapshot.docs.map((doc) => Item.fromMap(doc.data())).toList();
   }
 
   Future<List<Item>> fetchSets() async {
@@ -90,12 +92,13 @@ class _ProfileState extends State<Profile> {
     if (user == null) return [];
     print("Fetching sets for UID: ${user.uid}");
 
-    final querySnapshot = await _firestore
-        .collection('sets')
-        .where('user_id', isEqualTo: user.uid)
-        .get();
+    final querySnapshot =
+        await _firestore
+            .collection('sets')
+            .where('user_id', isEqualTo: user.uid)
+            .get();
     return querySnapshot.docs.map((doc) {
-      final data = doc.data() as Map<String, dynamic>;
+      final data = doc.data();
       data['id'] = doc.id; // Add the document ID to the data
       return Item.fromMap(data);
     }).toList();
@@ -151,10 +154,11 @@ class _ProfileState extends State<Profile> {
   void _logout() {
     showDialog(
       context: context,
-      builder: (context) => const Dialog(
-        backgroundColor: Colors.transparent,
-        child: LogOutConfirmation(),
-      ),
+      builder:
+          (context) => const Dialog(
+            backgroundColor: Colors.transparent,
+            child: SettingsPage(),
+          ),
     );
   }
 
@@ -162,11 +166,12 @@ class _ProfileState extends State<Profile> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChangeProfile(
-          onProfilePictureChanged: (newProfilePicture) {
-            _updateProfilePicture(newProfilePicture);
-          },
-        ),
+        builder:
+            (context) => ChangeProfile(
+              onProfilePictureChanged: (newProfilePicture) {
+                _updateProfilePicture(newProfilePicture);
+              },
+            ),
       ),
     );
   }
@@ -212,7 +217,9 @@ class _ProfileState extends State<Profile> {
                             height: 19,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: NetworkImage("https://placehold.co/23x19"),
+                                image: NetworkImage(
+                                  "https://placehold.co/23x19",
+                                ),
                                 fit: BoxFit.fill,
                               ),
                             ),
@@ -239,8 +246,14 @@ class _ProfileState extends State<Profile> {
                         final result = await showGeneralDialog(
                           context: context,
                           barrierDismissible: false,
-                          pageBuilder: (context, _, __) => CreateFlashcardSetPage(),
-                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                          pageBuilder:
+                              (context, _, __) => CreateFlashcardSetPage(),
+                          transitionBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -273,7 +286,9 @@ class _ProfileState extends State<Profile> {
                               height: 37,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage("https://placehold.co/37x37"),
+                                  image: NetworkImage(
+                                    "https://placehold.co/37x37",
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -304,7 +319,12 @@ class _ProfileState extends State<Profile> {
                           context: context,
                           barrierDismissible: false,
                           pageBuilder: (context, _, __) => const NewFolder(),
-                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                          transitionBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -337,7 +357,9 @@ class _ProfileState extends State<Profile> {
                               height: 33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage("https://placehold.co/33x33"),
+                                  image: NetworkImage(
+                                    "https://placehold.co/33x33",
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -584,11 +606,16 @@ class _ProfileState extends State<Profile> {
                           child: FutureBuilder<List<Item>>(
                             future: _setsFuture,
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Center(child: CircularProgressIndicator());
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               }
                               if (snapshot.hasError) {
-                                return Center(child: Text('Error: ${snapshot.error}'));
+                                return Center(
+                                  child: Text('Error: ${snapshot.error}'),
+                                );
                               }
                               final sets = snapshot.data ?? [];
                               if (sets.isEmpty) {
@@ -649,14 +676,22 @@ class _ProfileState extends State<Profile> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => FlashcardSetPreviewPage(setId: set.id),
+                                            builder:
+                                                (context) =>
+                                                    FlashcardSetPreviewPage(
+                                                      setId: set.id,
+                                                    ),
                                           ),
                                         );
                                       },
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4.0,
+                                          vertical: 8.0,
+                                        ),
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             SizedBox(
                                               width: 40,
@@ -712,11 +747,16 @@ class _ProfileState extends State<Profile> {
                           child: FutureBuilder<List<Item>>(
                             future: _foldersFuture,
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Center(child: CircularProgressIndicator());
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               }
                               if (snapshot.hasError) {
-                                return Center(child: Text('Error: ${snapshot.error}'));
+                                return Center(
+                                  child: Text('Error: ${snapshot.error}'),
+                                );
                               }
                               final folders = snapshot.data ?? [];
                               if (folders.isEmpty) {
@@ -777,14 +817,20 @@ class _ProfileState extends State<Profile> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => Folders(folder: folder),
+                                            builder:
+                                                (context) =>
+                                                    Folders(folder: folder),
                                           ),
                                         );
                                       },
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4.0,
+                                          vertical: 8.0,
+                                        ),
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Icon(
                                               Icons.folder,
@@ -832,17 +878,21 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 0 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 0
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 0
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 0
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.home, size: 30),
               ),
@@ -856,17 +906,21 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 1 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 1
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 1
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 1
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.add_circle_outline, size: 30),
               ),
@@ -880,17 +934,21 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 2 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 2
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 2
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 2
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.person, size: 30),
               ),

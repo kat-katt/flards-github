@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'flashcard_settings_page.dart';
+import 'settings.dart';
 
 class Flashcard extends StatefulWidget {
   final String setId;
@@ -20,10 +20,8 @@ class _FlashcardState extends State<Flashcard> {
   @override
   void initState() {
     super.initState();
-    _setFuture = FirebaseFirestore.instance
-        .collection('sets')
-        .doc(widget.setId)
-        .get();
+    _setFuture =
+        FirebaseFirestore.instance.collection('sets').doc(widget.setId).get();
   }
 
   void _nextCard() {
@@ -196,7 +194,10 @@ class _FlashcardState extends State<Flashcard> {
                     left: 63,
                     top: 264.54,
                     child: Container(
-                      transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(-0.07),
+                      transform:
+                          Matrix4.identity()
+                            ..translate(0.0, 0.0)
+                            ..rotateZ(-0.07),
                       width: 229,
                       height: 365,
                       decoration: ShapeDecoration(
@@ -215,7 +216,7 @@ class _FlashcardState extends State<Flashcard> {
                             blurRadius: 4,
                             offset: Offset(0, 4),
                             spreadRadius: 0,
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -242,7 +243,7 @@ class _FlashcardState extends State<Flashcard> {
                             blurRadius: 4,
                             offset: Offset(0, 4),
                             spreadRadius: 0,
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -271,7 +272,7 @@ class _FlashcardState extends State<Flashcard> {
                               blurRadius: 4,
                               offset: Offset(0, 4),
                               spreadRadius: 0,
-                            )
+                            ),
                           ],
                         ),
                         child: Center(
@@ -334,7 +335,7 @@ class _FlashcardState extends State<Flashcard> {
                               blurRadius: 4,
                               offset: Offset(0, 4),
                               spreadRadius: 0,
-                            )
+                            ),
                           ],
                         ),
                         child: Center(
@@ -371,7 +372,7 @@ class _FlashcardState extends State<Flashcard> {
                               blurRadius: 4,
                               offset: Offset(0, 4),
                               spreadRadius: 0,
-                            )
+                            ),
                           ],
                         ),
                         child: Center(

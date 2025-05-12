@@ -72,11 +72,7 @@ class _FlashcardSetPreviewPageState extends State<FlashcardSetPreviewPage> {
               Positioned(
                 left: 135,
                 top: 74,
-                child: Image.asset(
-                  'assets/icons/logo.png',
-                  width: 111,
-                  height: 44,
-                ),
+                child: Image.asset('assets/logo.png', width: 111, height: 44),
               ),
               // Settings button
               Positioned(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'flashcard_set_preview_page.dart';
-import 'flashcard_settings_page.dart';
+import 'settings.dart';
 
 class CreateFlashcardSetPage extends StatefulWidget {
   const CreateFlashcardSetPage({super.key});
@@ -10,13 +10,11 @@ class CreateFlashcardSetPage extends StatefulWidget {
   @override
   _CreateFlashcardSetPageState createState() => _CreateFlashcardSetPageState();
 }
+
 class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
   final _titleController = TextEditingController();
   final List<Map<String, TextEditingController>> _cards = [
-    {
-      'term': TextEditingController(),
-      'definition': TextEditingController(),
-    },
+    {'term': TextEditingController(), 'definition': TextEditingController()},
   ];
 
   @override
@@ -40,16 +38,18 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
 
   Future<void> _saveSet() async {
     if (_titleController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a set title')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter a set title')));
       return;
     }
 
     for (var card in _cards) {
       if (card['term']!.text.isEmpty || card['definition']!.text.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('All terms and definitions are required')),
+          const SnackBar(
+            content: Text('All terms and definitions are required'),
+          ),
         );
         return;
       }
@@ -70,18 +70,21 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
         'user_id': user.uid,
         'createdAt': FieldValue.serverTimestamp(),
         'folderId': null,
-        'cards': _cards.asMap().entries.map((entry) {
-          final index = entry.key;
-          final card = entry.value;
-          return {
-            'term': card['term']!.text,
-            'definition': card['definition']!.text,
-            'order': index + 1,
-          };
-        }).toList(),
+        'cards':
+            _cards.asMap().entries.map((entry) {
+              final index = entry.key;
+              final card = entry.value;
+              return {
+                'term': card['term']!.text,
+                'definition': card['definition']!.text,
+                'order': index + 1,
+              };
+            }).toList(),
       };
       print('Saving set: $setData'); // Debug
-      final docRef = await FirebaseFirestore.instance.collection('sets').add(setData);
+      final docRef = await FirebaseFirestore.instance
+          .collection('sets')
+          .add(setData);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -90,9 +93,9 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
       );
     } catch (e) {
       print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving set: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error saving set: $e')));
     }
   }
 
@@ -111,10 +114,7 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
               decoration: ShapeDecoration(
                 color: const Color(0xFFD1E5FE),
                 shape: RoundedRectangleBorder(
-                  side: const BorderSide(
-                    width: 4,
-                    color: Color(0xFF081D5C),
-                  ),
+                  side: const BorderSide(width: 4, color: Color(0xFF081D5C)),
                   borderRadius: BorderRadius.circular(56),
                 ),
               ),
@@ -167,7 +167,10 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
                             controller: _titleController,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 5,
+                              ),
                               hintText: 'Enter set title',
                               hintStyle: TextStyle(
                                 color: Color(0xFF081D5C),
@@ -213,9 +216,13 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.only(left:20, top: 10),
+                                  padding: const EdgeInsets.only(
+                                    left: 20,
+                                    top: 10,
+                                  ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text(
                                         'Term',
@@ -257,9 +264,13 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(left:20, top: 10),
+                                  padding: const EdgeInsets.only(
+                                    left: 20,
+                                    top: 10,
+                                  ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text(
                                         'Definition',
@@ -357,9 +368,7 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
                 );
               },
               child: Image.asset(
@@ -375,7 +384,8 @@ class _CreateFlashcardSetPageState extends State<CreateFlashcardSetPage> {
             top: 764,
             child: GestureDetector(
               onTap: _addCard,
-              child: Image.asset('assets/icons/add.png',
+              child: Image.asset(
+                'assets/icons/add.png',
                 width: 53,
                 height: 53,
                 color: const Color(0xFF344EAF),
