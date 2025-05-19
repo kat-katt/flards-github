@@ -23,7 +23,7 @@ class Cccreate extends StatelessWidget {
                     height: 45,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage("assets/icons/back.png"),
+                        image: AssetImage("assets/back.png"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -37,7 +37,7 @@ class Cccreate extends StatelessWidget {
                     height: 19,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage("assets/icons/back.png"),
+                        image: AssetImage("assets/create set.png"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -91,7 +91,7 @@ class Cccreate extends StatelessWidget {
                               height: 37,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: AssetImage("assets/icons/back.png"),
+                                  image: AssetImage("assets/create set.png"),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -151,7 +151,7 @@ class Cccreate extends StatelessWidget {
                               height: 33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: AssetImage("assets/icons/back.png"),
+                                  image: AssetImage("assets/create folder.png"),
                                   fit: BoxFit.cover,
                                 ),
                               ),

@@ -68,14 +68,6 @@ class Folders extends StatelessWidget {
                     image: AssetImage("assets/logo.png"),
                     fit: BoxFit.fill,
                   ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x3F000000),
-                      blurRadius: 4,
-                      offset: Offset(0, 4),
-                      spreadRadius: 0,
-                    ),
-                  ],
                 ),
               ),
             ),

@@ -18,10 +18,12 @@ class _EmailVerificationForNewAccState
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final List<TextEditingController> _codeControllers = List.generate(
     4,
-    (_) => TextEditingController(),
+        (_) => TextEditingController(),
   );
   String? _generatedCode;
   String? _errorMessage;
+  int _activeIndex = -1; // Track which spade is active for input
+  final TextEditingController _hiddenController = TextEditingController();
 
   @override
   void initState() {
@@ -63,6 +65,7 @@ class _EmailVerificationForNewAccState
       for (var controller in _codeControllers) {
         controller.clear();
       }
+      _activeIndex = -1;
     });
     await _sendVerificationCode();
   }
@@ -78,7 +81,7 @@ class _EmailVerificationForNewAccState
       }
 
       String enteredCode =
-          _codeControllers.map((controller) => controller.text).join();
+      _codeControllers.map((controller) => controller.text).join();
       if (enteredCode.length != 4) {
         setState(() {
           _errorMessage = 'Please enter a 4-digit code';
@@ -87,7 +90,7 @@ class _EmailVerificationForNewAccState
       }
 
       DocumentSnapshot doc =
-          await _firestore.collection('verification_codes').doc(user.uid).get();
+      await _firestore.collection('verification_codes').doc(user.uid).get();
       if (!doc.exists || doc['code'] != enteredCode) {
         setState(() {
           _errorMessage = 'Invalid verification code';
@@ -119,11 +122,41 @@ class _EmailVerificationForNewAccState
     }
   }
 
+  void _handleTap(int index) {
+    setState(() {
+      _activeIndex = index;
+    });
+    _hiddenController.clear();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enter Digit'),
+        content: TextField(
+          controller: _hiddenController,
+          keyboardType: TextInputType.number,
+          maxLength: 1,
+          decoration: const InputDecoration(hintText: 'Enter a digit (0-9)'),
+          onChanged: (value) {
+            if (value.length == 1 && int.tryParse(value) != null) {
+              _codeControllers[_activeIndex].text = value;
+              Navigator.pop(context);
+              setState(() {
+                _activeIndex = -1;
+                if (_activeIndex < 3) _activeIndex++;
+              });
+            }
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     for (var controller in _codeControllers) {
       controller.dispose();
     }
+    _hiddenController.dispose();
     super.dispose();
   }
 
@@ -162,7 +195,7 @@ class _EmailVerificationForNewAccState
                   top: 217,
                   child: SizedBox(
                     width: 277,
-                    height: 20,
+                    height: 30,
                     child: Text(
                       'The best digital flashcard app.',
                       style: TextStyle(
@@ -179,9 +212,9 @@ class _EmailVerificationForNewAccState
                   top: 633.39,
                   child: Container(
                     transform:
-                        Matrix4.identity()
-                          ..translate(0.0, 0.0)
-                          ..rotateZ(-0.84),
+                    Matrix4.identity()
+                      ..translate(0.0, 0.0)
+                      ..rotateZ(-0.84),
                     width: 144.34,
                     height: 588,
                     decoration: ShapeDecoration(
@@ -202,9 +235,9 @@ class _EmailVerificationForNewAccState
                   top: 510.86,
                   child: Container(
                     transform:
-                        Matrix4.identity()
-                          ..translate(0.0, 0.0)
-                          ..rotateZ(-0.63),
+                    Matrix4.identity()
+                      ..translate(0.0, 0.0)
+                      ..rotateZ(-0.63),
                     width: 144.34,
                     height: 588,
                     decoration: ShapeDecoration(
@@ -225,9 +258,9 @@ class _EmailVerificationForNewAccState
                   top: 403.53,
                   child: Container(
                     transform:
-                        Matrix4.identity()
-                          ..translate(0.0, 0.0)
-                          ..rotateZ(-0.29),
+                    Matrix4.identity()
+                      ..translate(0.0, 0.0)
+                      ..rotateZ(-0.29),
                     width: 144.34,
                     height: 588,
                     decoration: ShapeDecoration(
@@ -248,9 +281,9 @@ class _EmailVerificationForNewAccState
                   top: 320.50,
                   child: Container(
                     transform:
-                        Matrix4.identity()
-                          ..translate(0.0, 0.0)
-                          ..rotateZ(-0.18),
+                    Matrix4.identity()
+                      ..translate(0.0, 0.0)
+                      ..rotateZ(-0.18),
                     width: 365,
                     height: 588,
                     decoration: ShapeDecoration(
@@ -296,14 +329,6 @@ class _EmailVerificationForNewAccState
                         image: AssetImage("assets/logo.png"),
                         fit: BoxFit.fill,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0x3F000000),
-                          blurRadius: 4,
-                          offset: const Offset(0, 4),
-                          spreadRadius: 0,
-                        ),
-                      ],
                     ),
                   ),
                 ),
@@ -349,7 +374,7 @@ class _EmailVerificationForNewAccState
                       height: 41,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage("assets/arrow_back.png"),
+                          image: AssetImage("assets/arrow back.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -411,144 +436,112 @@ class _EmailVerificationForNewAccState
                 Positioned(
                   left: 53,
                   top: 556,
-                  child: Container(
-                    width: 83,
-                    height: 83,
-                    decoration: ShapeDecoration(
-                      color: const Color(0xFFD1E5FE),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: TextField(
-                      controller: _codeControllers[0],
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF081D5C),
-                        fontSize: 36,
-                        fontFamily: 'OPTIFrankfurter-Medium',
-                        fontWeight: FontWeight.w500,
-                      ),
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        counterText: '',
-                      ),
-                      onChanged: (value) {
-                        if (value.length == 1) {
-                          FocusScope.of(context).nextFocus();
-                        }
-                      },
+                  child: GestureDetector(
+                    onTap: () => _handleTap(0),
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          "assets/spades.png",
+                          width: 83,
+                          height: 83,
+                        ),
+                        if (_codeControllers[0].text.isNotEmpty)
+                          Center(
+                            child: Text(
+                              _codeControllers[0].text,
+                              style: const TextStyle(
+                                color: Color(0xFF081D5C),
+                                fontSize: 36,
+                                fontFamily: 'OPTIFrankfurter-Medium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
                 Positioned(
                   left: 127,
                   top: 556,
-                  child: Container(
-                    width: 83,
-                    height: 83,
-                    decoration: ShapeDecoration(
-                      color: const Color(0xFFD1E5FE),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: TextField(
-                      controller: _codeControllers[1],
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF081D5C),
-                        fontSize: 36,
-                        fontFamily: 'OPTIFrankfurter-Medium',
-                        fontWeight: FontWeight.w500,
-                      ),
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        counterText: '',
-                      ),
-                      onChanged: (value) {
-                        if (value.length == 1) {
-                          FocusScope.of(context).nextFocus();
-                        } else if (value.isEmpty) {
-                          FocusScope.of(context).previousFocus();
-                        }
-                      },
+                  child: GestureDetector(
+                    onTap: () => _handleTap(1),
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          "assets/spades.png",
+                          width: 83,
+                          height: 83,
+                        ),
+                        if (_codeControllers[1].text.isNotEmpty)
+                          Center(
+                            child: Text(
+                              _codeControllers[1].text,
+                              style: const TextStyle(
+                                color: Color(0xFF081D5C),
+                                fontSize: 36,
+                                fontFamily: 'OPTIFrankfurter-Medium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
                 Positioned(
                   left: 202,
                   top: 556,
-                  child: Container(
-                    width: 83,
-                    height: 83,
-                    decoration: ShapeDecoration(
-                      color: const Color(0xFFD1E5FE),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: TextField(
-                      controller: _codeControllers[2],
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF081D5C),
-                        fontSize: 36,
-                        fontFamily: 'OPTIFrankfurter-Medium',
-                        fontWeight: FontWeight.w500,
-                      ),
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        counterText: '',
-                      ),
-                      onChanged: (value) {
-                        if (value.length == 1) {
-                          FocusScope.of(context).nextFocus();
-                        } else if (value.isEmpty) {
-                          FocusScope.of(context).previousFocus();
-                        }
-                      },
+                  child: GestureDetector(
+                    onTap: () => _handleTap(2),
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          "assets/spades.png",
+                          width: 83,
+                          height: 83,
+                        ),
+                        if (_codeControllers[2].text.isNotEmpty)
+                          Center(
+                            child: Text(
+                              _codeControllers[2].text,
+                              style: const TextStyle(
+                                color: Color(0xFF081D5C),
+                                fontSize: 36,
+                                fontFamily: 'OPTIFrankfurter-Medium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
                 Positioned(
                   left: 276,
                   top: 554,
-                  child: Container(
-                    width: 83,
-                    height: 83,
-                    decoration: ShapeDecoration(
-                      color: const Color(0xFFD1E5FE),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: TextField(
-                      controller: _codeControllers[3],
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF081D5C),
-                        fontSize: 36,
-                        fontFamily: 'OPTIFrankfurter-Medium',
-                        fontWeight: FontWeight.w500,
-                      ),
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        counterText: '',
-                      ),
-                      onChanged: (value) {
-                        if (value.isEmpty) {
-                          FocusScope.of(context).previousFocus();
-                        }
-                      },
+                  child: GestureDetector(
+                    onTap: () => _handleTap(3),
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          "assets/spades.png",
+                          width: 83,
+                          height: 83,
+                        ),
+                        if (_codeControllers[3].text.isNotEmpty)
+                          Center(
+                            child: Text(
+                              _codeControllers[3].text,
+                              style: const TextStyle(
+                                color: Color(0xFF081D5C),
+                                fontSize: 36,
+                                fontFamily: 'OPTIFrankfurter-Medium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
@@ -570,7 +563,7 @@ class _EmailVerificationForNewAccState
                 ),
                 Positioned(
                   left: 255,
-                  top: 655,
+                  top: 658,
                   child: GestureDetector(
                     onTap: _resendVerificationCode,
                     child: SizedBox(
@@ -591,7 +584,7 @@ class _EmailVerificationForNewAccState
                 if (_errorMessage != null)
                   Positioned(
                     left: 53,
-                    top: 610,
+                    top: 638,
                     child: SizedBox(
                       width: 294,
                       child: Text(
