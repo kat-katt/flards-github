@@ -58,12 +58,19 @@ flutter:
     - assets/spade_back.png
     - assets/icons/add.png
     - assets/icons/back.png
+    - assets/icons/cancel.png
+    - assets/icons/delete.png
     - assets/icons/dot.png
     - assets/icons/flardspade.png
+    - assets/icons/hint.png
+    - assets/icons/idk.png
+    - assets/icons/know.png
+    - assets/icons/pomodoro.png
     - assets/icons/save.png
     - assets/icons/settings.png
     - assets/icons/share.png
     - assets/icons/terms.png
+    - assets/icons/undo.png
     - assets/icons/user.png
   fonts:
     - family: OPTIFrankfurter-Medium

@@ -66,47 +66,14 @@ class _SetOptionsState extends State<SetOptions> {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
-            title: const Text(
-              'Delete Set',
-              style: TextStyle(
-                color: Color(0xFF081D5C),
-                fontFamily: 'OPTIFrankfurter-Medium',
-                fontWeight: FontWeight.w500,
+          (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: Center(
+              child: ConfirmDeletion(
+                onDelete: _deleteSet,
+                onCancel: () => Navigator.pop(context),
               ),
             ),
-            content: const Text(
-              'Are you sure you want to delete this set?',
-              style: TextStyle(
-                color: Color(0xFF081D5C),
-                fontFamily: 'Questrial',
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(
-                    color: Color(0xFF081D5C),
-                    fontFamily: 'OPTIFrankfurter-Medium',
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deleteSet();
-                },
-                child: const Text(
-                  'Delete',
-                  style: TextStyle(
-                    color: Color(0xFFC02E2E),
-                    fontFamily: 'OPTIFrankfurter-Medium',
-                  ),
-                ),
-              ),
-            ],
           ),
     );
   }
@@ -350,6 +317,161 @@ class _SetOptionsState extends State<SetOptions> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ConfirmDeletion extends StatelessWidget {
+  final VoidCallback onDelete;
+  final VoidCallback onCancel;
+
+  const ConfirmDeletion({
+    super.key,
+    required this.onDelete,
+    required this.onCancel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 271,
+      height: 338,
+      child: Stack(
+        alignment: Alignment.center, // Center the stack's children
+        children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            child: Container(
+              width: 271,
+              height: 338,
+              decoration: ShapeDecoration(
+                color: const Color(0xFFFFF6ED),
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    width: 6,
+                    strokeAlign: BorderSide.strokeAlignOutside,
+                    color: const Color(0xFFC02E2E),
+                  ),
+                  borderRadius: BorderRadius.circular(51),
+                ),
+                shadows: [
+                  BoxShadow(
+                    color: Color(0x3F000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 4),
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 50,
+            top: 44,
+            child: SizedBox(
+              width: 174,
+              height: 53,
+              child: Text(
+                'Confirm',
+                textAlign: TextAlign.center, // Center the text
+                style: TextStyle(
+                  color: const Color(0xFFC02E2E),
+                  fontSize: 40,
+                  fontFamily: 'OPTIFrankfurter-Medium',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 31,
+            top: 136,
+            child: GestureDetector(
+              onTap: onDelete,
+              child: Container(
+                width: 211,
+                height: 53,
+                decoration: ShapeDecoration(
+                  color: const Color(0xFFFED1D1),
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(width: 2, color: const Color(0xFFC02E2E)),
+                    borderRadius: BorderRadius.circular(19),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/icons/delete.png',
+                      width: 30,
+                      height: 30,
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 136,
+                      height: 34,
+                      child: Text(
+                        'Delete',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color(0xFFC02E2E),
+                          fontSize: 25,
+                          fontFamily: 'OPTIFrankfurter-Medium',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 31,
+            top: 218,
+            child: GestureDetector(
+              onTap: onCancel,
+              child: Container(
+                width: 211,
+                height: 53,
+                decoration: ShapeDecoration(
+                  color: const Color(0xFFD1E5FE),
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(width: 2, color: const Color(0xFF081D5C)),
+                    borderRadius: BorderRadius.circular(19),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/icons/cancel.png',
+                      width: 33,
+                      height: 33,
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 95,
+                      height: 34,
+                      child: Text(
+                        'Cancel',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color(0xFF081D5C),
+                          fontSize: 25,
+                          fontFamily: 'OPTIFrankfurter-Medium',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

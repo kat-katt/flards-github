@@ -153,7 +153,7 @@ class _FlashcardState extends State<Flashcard> {
                   Positioned(
                     left: 147,
                     top: 74,
-                    child: Container(
+                    child: SizedBox(
                       width: 111,
                       height: 44,
                       child: Center(
