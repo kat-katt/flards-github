@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Added import
+import 'item.dart';
 
 class NewFolder extends StatefulWidget {
   const NewFolder({super.key});
@@ -13,45 +16,49 @@ class _NewFolderState extends State<NewFolder> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _tagsController = TextEditingController();
+  bool _isPrivate = true;
+  final Uuid _uuid = Uuid();
 
-  Future<void> _saveFolder() async {
-    if (_nameController.text.isEmpty) {
+  Future<void> _createFolder() async {
+    if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a folder name')),
+        const SnackBar(content: Text('Folder name is required')),
       );
       return;
     }
 
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to create a folder')),
+      );
+      return;
+    }
+
+    final folderId = _uuid.v4();
+    final folder = Item(
+      id: folderId,
+      name: _nameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      tags: _tagsController.text.trim(),
+      isPrivate: _isPrivate,
+      userId: user.uid,
+    );
+
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw FirebaseAuthException(
-          code: 'no-user',
-          message: 'No user is signed in.',
-        );
-      }
-
       await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
           .collection('folders')
-          .add({
-            'name': _nameController.text,
-            'description': _descriptionController.text,
-            'tags':
-                _tagsController.text
-                    .split(',')
-                    .map((tag) => tag.trim())
-                    .toList(),
-            'createdAt': FieldValue.serverTimestamp(),
-            'isPrivate': true, // Assuming private by default
-          });
-
-      Navigator.pop(context); // Return to previous screen
+          .doc(folderId)
+          .set(folder.toMap());
+      await RecentFolders.addFolder(folderId);
+      Navigator.pop(context, folder);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Folder "${folder.name}" created!')),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error saving folder: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error creating folder: $e')),
+      );
     }
   }
 
@@ -85,30 +92,39 @@ class _NewFolderState extends State<NewFolder> {
               ),
             ),
             Positioned(
-              left: 40,
+              left: 308,
               top: 53,
               child: GestureDetector(
-                onTap: () {
-                  Navigator.pop(
-                    context,
-                  ); // Navigate back to the previous screen
-                },
-                child: Image.asset(
-                  'assets/icons/back.png',
+                onTap: () => Navigator.pop(context),
+                child: Container(
                   width: 45,
                   height: 45,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage("https://placehold.co/45x45"),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.close, color: Color(0xFF081D5C), size: 24),
+                  ),
                 ),
               ),
             ),
             Positioned(
-              left: 308,
+              left: 40,
               top: 53,
               child: GestureDetector(
-                onTap: _saveFolder, // Save folder to Firestore
-                child: Image.asset(
-                  'assets/icons/save.png',
+                onTap: () => Navigator.pop(context),
+                child: Container(
                   width: 45,
                   height: 45,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.arrow_back, color: Color(0xFF081D5C), size: 24),
+                  ),
                 ),
               ),
             ),
@@ -123,6 +139,14 @@ class _NewFolderState extends State<NewFolder> {
                     image: AssetImage("assets/logo.png"),
                     fit: BoxFit.fill,
                   ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x3F000000),
+                      blurRadius: 4,
+                      offset: Offset(0, 4),
+                      spreadRadius: 0,
+                    )
+                  ],
                 ),
               ),
             ),
@@ -236,10 +260,7 @@ class _NewFolderState extends State<NewFolder> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: TextField(
                     controller: _descriptionController,
                     maxLines: 5,
@@ -355,22 +376,60 @@ class _NewFolderState extends State<NewFolder> {
                     borderRadius: BorderRadius.circular(18),
                   ),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Private',
-                        style: TextStyle(
+                        _isPrivate ? 'Private' : 'Public',
+                        style: const TextStyle(
                           color: Color(0xFF081D5C),
                           fontSize: 19,
                           fontFamily: 'OPTIFrankfurter-Medium',
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(width: 23, height: 25, child: Placeholder()),
+                      Switch(
+                        value: _isPrivate,
+                        onChanged: (value) => setState(() => _isPrivate = value),
+                        activeColor: const Color(0xFF081D5C),
+                      ),
                     ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 28,
+              top: 753,
+              child: GestureDetector(
+                onTap: _createFolder,
+                child: Container(
+                  width: 331,
+                  height: 45.75,
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFFFF6ED),
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(
+                        width: 2.50,
+                        strokeAlign: BorderSide.strokeAlignOutside,
+                        color: Color(0xFF081D5C),
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Create Folder',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF081D5C),
+                        fontSize: 21,
+                        fontFamily: 'OPTIFrankfurter-Medium',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -379,5 +438,31 @@ class _NewFolderState extends State<NewFolder> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _tagsController.dispose();
+    super.dispose();
+  }
+}
+
+class RecentFolders {
+  static const String _key = 'recent_folders';
+
+  static Future<void> addFolder(String folderId) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> recent = prefs.getStringList(_key) ?? [];
+    recent.remove(folderId);
+    recent.insert(0, folderId);
+    if (recent.length > 5) recent = recent.sublist(0, 5);
+    await prefs.setStringList(_key, recent);
+  }
+
+  static Future<List<String>> getRecentFolders() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_key) ?? [];
   }
 }
