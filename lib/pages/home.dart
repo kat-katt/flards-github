@@ -74,7 +74,9 @@ class _HomePageState extends State<HomePage> {
                             height: 19,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: NetworkImage("https://placehold.co/23x19"),
+                                image: NetworkImage(
+                                  "https://placehold.co/23x19",
+                                ),
                                 fit: BoxFit.fill,
                               ),
                             ),
@@ -101,8 +103,14 @@ class _HomePageState extends State<HomePage> {
                         showGeneralDialog(
                           context: context,
                           barrierDismissible: false,
-                          pageBuilder: (context, _, __) => CreateFlashcardSetPage(),
-                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                          pageBuilder:
+                              (context, _, __) => CreateFlashcardSetPage(),
+                          transitionBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -132,7 +140,9 @@ class _HomePageState extends State<HomePage> {
                               height: 37,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage("https://placehold.co/37x37"),
+                                  image: NetworkImage(
+                                    "https://placehold.co/37x37",
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -159,11 +169,16 @@ class _HomePageState extends State<HomePage> {
                     GestureDetector(
                       onTap: () async {
                         Navigator.pop(context);
-                        final result = await showGeneralDialog(
+                        await showGeneralDialog(
                           context: context,
                           barrierDismissible: false,
                           pageBuilder: (context, _, __) => const NewFolder(),
-                          transitionBuilder: (context, animation, secondaryAnimation, child) {
+                          transitionBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
                             return FadeTransition(
                               opacity: animation,
                               child: child,
@@ -194,7 +209,9 @@ class _HomePageState extends State<HomePage> {
                               height: 33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage("https://placehold.co/33x33"),
+                                  image: NetworkImage(
+                                    "https://placehold.co/33x33",
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -249,9 +266,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('Please log in')),
-      );
+      return const Scaffold(body: Center(child: Text('Please log in')));
     }
 
     return Scaffold(
@@ -398,18 +413,25 @@ class _HomePageState extends State<HomePage> {
                             left: 24,
                             top: 270,
                             child: StreamBuilder<DocumentSnapshot>(
-                              stream: FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(user.uid)
-                                  .snapshots(),
+                              stream:
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(user.uid)
+                                      .snapshots(),
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return const Center(child: CircularProgressIndicator());
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
                                 }
                                 if (snapshot.hasError) {
-                                  return const Center(child: Text('Error loading sets'));
+                                  return const Center(
+                                    child: Text('Error loading sets'),
+                                  );
                                 }
-                                if (!snapshot.hasData || snapshot.data!.data() == null) {
+                                if (!snapshot.hasData ||
+                                    snapshot.data!.data() == null) {
                                   return Container(
                                     width: 312,
                                     height: 150,
@@ -420,7 +442,8 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: 50,
@@ -455,8 +478,13 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 }
 
-                                final data = snapshot.data!.data() as Map<String, dynamic>;
-                                final recentSets = List<Map<String, dynamic>>.from(data['recentSets'] ?? []);
+                                final data =
+                                    snapshot.data!.data()
+                                        as Map<String, dynamic>;
+                                final recentSets =
+                                    List<Map<String, dynamic>>.from(
+                                      data['recentSets'] ?? [],
+                                    );
                                 if (recentSets.isEmpty) {
                                   return Container(
                                     width: 312,
@@ -468,7 +496,8 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: 50,
@@ -503,7 +532,11 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 }
 
-                                recentSets.sort((a, b) => DateTime.parse(b['lastOpened']).compareTo(DateTime.parse(a['lastOpened'])));
+                                recentSets.sort(
+                                  (a, b) => DateTime.parse(
+                                    b['lastOpened'],
+                                  ).compareTo(DateTime.parse(a['lastOpened'])),
+                                );
                                 return SizedBox(
                                   width: 312,
                                   height: 150,
@@ -514,23 +547,34 @@ class _HomePageState extends State<HomePage> {
                                     itemBuilder: (context, index) {
                                       final set = recentSets[index];
                                       return FutureBuilder<DocumentSnapshot>(
-                                        future: FirebaseFirestore.instance
-                                            .collection('sets')
-                                            .doc(set['setId'])
-                                            .get(),
+                                        future:
+                                            FirebaseFirestore.instance
+                                                .collection('sets')
+                                                .doc(set['setId'])
+                                                .get(),
                                         builder: (context, setSnapshot) {
-                                          if (!setSnapshot.hasData || !setSnapshot.data!.exists) {
+                                          if (!setSnapshot.hasData ||
+                                              !setSnapshot.data!.exists) {
                                             return const SizedBox.shrink();
                                           }
-                                          final setData = setSnapshot.data!.data() as Map<String, dynamic>;
+                                          final setData =
+                                              setSnapshot.data!.data()
+                                                  as Map<String, dynamic>;
                                           return Padding(
-                                            padding: const EdgeInsets.only(right: 24),
+                                            padding: const EdgeInsets.only(
+                                              right: 24,
+                                            ),
                                             child: GestureDetector(
                                               onTap: () {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (context) => FlashcardSetPreviewPage(setId: set['setId']),
+                                                    builder:
+                                                        (context) =>
+                                                            FlashcardSetPreviewPage(
+                                                              setId:
+                                                                  set['setId'],
+                                                            ),
                                                   ),
                                                 );
                                               },
@@ -539,11 +583,15 @@ class _HomePageState extends State<HomePage> {
                                                 decoration: ShapeDecoration(
                                                   color: Colors.transparent,
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(17),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          17,
+                                                        ),
                                                   ),
                                                 ),
                                                 child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     SizedBox(
                                                       width: 50,
@@ -555,18 +603,29 @@ class _HomePageState extends State<HomePage> {
                                                     ),
                                                     const SizedBox(height: 8),
                                                     Padding(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                          ),
                                                       child: Text(
-                                                        setData['title'] ?? 'Untitled Set',
+                                                        setData['title'] ??
+                                                            'Untitled Set',
                                                         style: const TextStyle(
-                                                          color: Color(0xFF081D5C),
+                                                          color: Color(
+                                                            0xFF081D5C,
+                                                          ),
                                                           fontSize: 16,
-                                                          fontFamily: 'Questrial',
-                                                          fontWeight: FontWeight.w500,
+                                                          fontFamily:
+                                                              'Questrial',
+                                                          fontWeight:
+                                                              FontWeight.w500,
                                                         ),
-                                                        textAlign: TextAlign.center,
+                                                        textAlign:
+                                                            TextAlign.center,
                                                         maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
                                                       ),
                                                     ),
                                                   ],
@@ -603,18 +662,25 @@ class _HomePageState extends State<HomePage> {
                             left: 24,
                             top: 500,
                             child: StreamBuilder<DocumentSnapshot>(
-                              stream: FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(user.uid)
-                                  .snapshots(),
+                              stream:
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(user.uid)
+                                      .snapshots(),
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return const Center(child: CircularProgressIndicator());
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
                                 }
                                 if (snapshot.hasError) {
-                                  return const Center(child: Text('Error loading folders'));
+                                  return const Center(
+                                    child: Text('Error loading folders'),
+                                  );
                                 }
-                                if (!snapshot.hasData || snapshot.data!.data() == null) {
+                                if (!snapshot.hasData ||
+                                    snapshot.data!.data() == null) {
                                   return Container(
                                     width: 312,
                                     height: 150,
@@ -625,7 +691,8 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: 50,
@@ -660,8 +727,13 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 }
 
-                                final data = snapshot.data!.data() as Map<String, dynamic>;
-                                final recentFolders = List<Map<String, dynamic>>.from(data['recentFolders'] ?? []);
+                                final data =
+                                    snapshot.data!.data()
+                                        as Map<String, dynamic>;
+                                final recentFolders =
+                                    List<Map<String, dynamic>>.from(
+                                      data['recentFolders'] ?? [],
+                                    );
                                 if (recentFolders.isEmpty) {
                                   return Container(
                                     width: 312,
@@ -673,7 +745,8 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: 50,
@@ -708,9 +781,15 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 }
 
-                                recentFolders.sort((a, b) => DateTime.parse(b['lastOpened']).compareTo(DateTime.parse(a['lastOpened'])));
+                                recentFolders.sort(
+                                  (a, b) => DateTime.parse(
+                                    b['lastOpened'],
+                                  ).compareTo(DateTime.parse(a['lastOpened'])),
+                                );
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
                                   child: Container(
                                     width: 312,
                                     height: 150,
@@ -721,29 +800,41 @@ class _HomePageState extends State<HomePage> {
                                       itemBuilder: (context, index) {
                                         final folder = recentFolders[index];
                                         return FutureBuilder<DocumentSnapshot>(
-                                          future: FirebaseFirestore.instance
-                                              .collection('folders')
-                                              .doc(folder['folderId'])
-                                              .get(),
+                                          future:
+                                              FirebaseFirestore.instance
+                                                  .collection('folders')
+                                                  .doc(folder['folderId'])
+                                                  .get(),
                                           builder: (context, folderSnapshot) {
-                                            if (!folderSnapshot.hasData || !folderSnapshot.data!.exists) {
+                                            if (!folderSnapshot.hasData ||
+                                                !folderSnapshot.data!.exists) {
                                               return const SizedBox.shrink();
                                             }
-                                            final folderData = folderSnapshot.data!.data() as Map<String, dynamic>;
+                                            final folderData =
+                                                folderSnapshot.data!.data()
+                                                    as Map<String, dynamic>;
                                             return Padding(
-                                              padding: const EdgeInsets.only(right: 24),
+                                              padding: const EdgeInsets.only(
+                                                right: 24,
+                                              ),
                                               child: GestureDetector(
                                                 onTap: () {
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => Folders(
-                                                        folder: Item(
-                                                          id: folder['folderId'],
-                                                          name: folderData['name'] ?? 'Untitled Folder',
-                                                          userId: folderData['userId'] ?? '',
-                                                        ),
-                                                      ),
+                                                      builder:
+                                                          (context) => Folders(
+                                                            folder: Item(
+                                                              id:
+                                                                  folder['folderId'],
+                                                              name:
+                                                                  folderData['name'] ??
+                                                                  'Untitled Folder',
+                                                              userId:
+                                                                  folderData['userId'] ??
+                                                                  '',
+                                                            ),
+                                                          ),
                                                     ),
                                                   );
                                                 },
@@ -752,11 +843,16 @@ class _HomePageState extends State<HomePage> {
                                                   decoration: ShapeDecoration(
                                                     color: Colors.transparent,
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(17),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            17,
+                                                          ),
                                                     ),
                                                   ),
                                                   child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       SizedBox(
                                                         width: 50,
@@ -768,18 +864,31 @@ class _HomePageState extends State<HomePage> {
                                                       ),
                                                       const SizedBox(height: 8),
                                                       Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 8,
+                                                            ),
                                                         child: Text(
-                                                          folderData['name'] ?? 'Untitled Folder',
-                                                          style: const TextStyle(
-                                                            color: Color(0xFF081D5C),
-                                                            fontSize: 16,
-                                                            fontFamily: 'Questrial',
-                                                            fontWeight: FontWeight.w500,
-                                                          ),
-                                                          textAlign: TextAlign.center,
+                                                          folderData['name'] ??
+                                                              'Untitled Folder',
+                                                          style:
+                                                              const TextStyle(
+                                                                color: Color(
+                                                                  0xFF081D5C,
+                                                                ),
+                                                                fontSize: 16,
+                                                                fontFamily:
+                                                                    'Questrial',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                          textAlign:
+                                                              TextAlign.center,
                                                           maxLines: 2,
-                                                          overflow: TextOverflow.ellipsis,
+                                                          overflow:
+                                                              TextOverflow
+                                                                  .ellipsis,
                                                         ),
                                                       ),
                                                     ],
@@ -815,17 +924,21 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 0 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 0
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 0
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 0
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.home, size: 30),
               ),
@@ -839,17 +952,21 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 1 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 1
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 1
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 1
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.add_circle_outline, size: 30),
               ),
@@ -863,17 +980,21 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == 2 ? const Color(0xFFE0E0E0) : const Color(0xFFF1F1F1),
+                  color:
+                      _selectedIndex == 2
+                          ? const Color(0xFFE0E0E0)
+                          : const Color(0xFFF1F1F1),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: _selectedIndex == 2
-                      ? [
-                    const BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 10,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                      : [],
+                  boxShadow:
+                      _selectedIndex == 2
+                          ? [
+                            const BoxShadow(
+                              color: Colors.blue,
+                              blurRadius: 10,
+                              spreadRadius: 3,
+                            ),
+                          ]
+                          : [],
                 ),
                 child: const Icon(Icons.person, size: 30),
               ),
